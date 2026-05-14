@@ -473,22 +473,11 @@
    ⚙️ CONFIGURATION — Buraya kendi bilgilerinizi girin
    ============================================================ */
 const CONFIG = {
-
-  // 1. Google Sheets — kullanıcı listesi (kullanıcı adı, şifre, rol)
-  // Sheets'i halka açık yapıp aşağıdaki URL formatını kullanın:
-  // https://docs.google.com/spreadsheets/d/1wmseY69ee9xomHVvQjewP0zaPOfNS3y9iM7JZ0_nyOE/gviz/tq?tqx=out:json
-  USERS_SHEET_URL: "https://docs.google.com/spreadsheets/d/1wmseY69ee9xomHVvQjewP0zaPOfNS3y9iM7JZ0_nyOE/gviz/tq?tqx=out:json&sheet=kullanicilar",
-
-  // 2. Google Sheets — cevaplar (gönderilen cevaplar burada birikir)
-  // Google Apps Script Web App URL'si (aşağıdaki kurulum rehberine bakın)
-  ANSWERS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzXTotJfJn2lm5a1ut_L3LN4TqNqzaoQtoGsBHrVwBB2WHcYaBrb_ayGy1x47QbkQuD/exec",
-
-  // 3. Cloudinary — ses dosyaları yükleme
-  CLOUDINARY_CLOUD_NAME: "dee5ahvyy",   // Cloudinary dashboard'dan alın
-  CLOUDINARY_UPLOAD_PRESET: "deneme1",    // Unsigned upload preset oluşturun
-
-  // 4. Öğretmen şifresi (ek güvenlik — opsiyonel)
-  TEACHER_PASSWORD: "ogretmen123"
+  USERS_SHEET_URL:          "https://docs.google.com/spreadsheets/d/1wmseY69ee9xomHVvQjewP0zaPOfNS3y9iM7JZ0_nyOE/gviz/tq?tqx=out:json&sheet=kullanicilar",
+  ANSWERS_SCRIPT_URL:       "https://script.google.com/macros/s/AKfycbzuiVxBDV--JGRW8YktQQeJMsV9lfBVeK-lnbIcU5Lt_4-I3MTIwAJurV1uIV96GRSd/exec",
+  CLOUDINARY_CLOUD_NAME:    "dee5ahvyy",
+  CLOUDINARY_UPLOAD_PRESET: "deneme1",
+  TEACHER_PASSWORD:         "ogretmen123"
 };
 
 /* ============================================================
