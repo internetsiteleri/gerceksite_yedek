@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profilim – Hamza Hoca</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0D1B2A;
+  --bg2:       #111f30;
+  --bg3:       #162333;
+  --card:      #1a2d40;
+  --border:    rgba(255,255,255,0.07);
+  --gold:      #F5C842;
+  --gold2:     #c9960a;
+  --text:      #e8edf3;
+  --muted:     #7a8fa6;
+  --green:     #2dd4a0;
+  --green-bg:  rgba(45,212,160,0.12);
+  --blue:      #4fa8e8;
+  --blue-bg:   rgba(79,168,232,0.12);
+  --red:       #f07070;
+  --red-bg:    rgba(240,112,112,0.12);
+  --amber:     #f5a623;
+  --amber-bg:  rgba(245,166,35,0.12);
+  --purple:    #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+  --radius:    14px;
+  --radius-sm: 8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position:sticky;top:0;z-index:50;
+  background:rgba(13,27,42,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.logo-link{font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.04em;text-decoration:none;opacity:.8;}
+.logo-link:hover{opacity:1;}
+.avatar {
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#0D1B2A;
+  flex-shrink:0;
+}
+.username-text{font-size:15px;font-weight:600;}
+.level-badge {
+  font-size:11px;font-weight:600;letter-spacing:.06em;
+  background:var(--purple-bg);color:var(--purple);
+  border:1px solid rgba(167,139,250,0.3);
+  padding:3px 10px;border-radius:20px;
+}
+.btn-logout {
+  font-size:12px;color:var(--muted);background:transparent;
+  border:1px solid rgba(255,255,255,0.12);border-radius:20px;
+  padding:6px 14px;cursor:pointer;transition:all .2s;
+}
+.btn-logout:hover{color:var(--text);border-color:rgba(255,255,255,0.25);}
+
+/* ── LAYOUT ── */
+.page {max-width:960px;margin:0 auto;padding:36px 20px 80px;}
+
+/* ── SECTION TITLE ── */
+.sec-title {
+  font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:14px;padding-left:2px;
+}
+
+/* ── METRIC CARDS ── */
+.metric-grid {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;
+}
+@media(max-width:640px){.metric-grid{grid-template-columns:repeat(2,1fr);}}
+.metric-card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 20px;
+  display:flex;flex-direction:column;gap:6px;
+  position:relative;overflow:hidden;
+}
+.metric-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--accent-color,var(--gold));opacity:.6;
+}
+.metric-val{font-size:28px;font-weight:700;color:var(--accent-color,var(--text));}
+.metric-lbl{font-size:12px;color:var(--muted);}
+
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+
+/* ── CARD ── */
+.card {
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 24px;
+}
+
+/* ── SKILL BARS ── */
+.skill-row{margin-bottom:14px;}
+.skill-row:last-child{margin-bottom:0;}
+.skill-head{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;}
+.skill-name{color:var(--text);}
+.skill-pct{font-weight:600;}
+.skill-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.skill-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+
+/* ── GOAL ── */
+.goal-wrap{display:flex;align-items:center;gap:18px;}
+.goal-ring {
+  flex-shrink:0;
+  width:70px;height:70px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:3px solid var(--green);
+  background:var(--green-bg);
+}
+.goal-ring .gn{font-size:20px;font-weight:700;color:var(--green);line-height:1;}
+.goal-ring .gl{font-size:10px;color:var(--green);margin-top:1px;}
+.goal-info{}
+.goal-info .gt{font-size:14px;font-weight:600;margin-bottom:6px;}
+.goal-bar{height:7px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;width:180px;}
+.goal-fill{height:100%;border-radius:4px;background:var(--green);transition:width 1s ease;}
+.goal-sub{font-size:12px;color:var(--muted);margin-top:5px;}
+
+/* ── CAL HEATMAP ── */
+.cal-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:14px;}
+.cal-cell{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,0.05);}
+.cal-cell.l1{background:rgba(45,212,160,0.25);}
+.cal-cell.l2{background:rgba(45,212,160,0.55);}
+.cal-cell.l3{background:var(--green);}
+
+/* ── HISTORY ── */
+.hist-row {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 0;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.hist-row:last-child{border-bottom:none;}
+.hist-name{font-weight:500;margin-bottom:2px;}
+.hist-date{font-size:11px;color:var(--muted);}
+.hist-cat{font-size:11px;color:var(--muted);}
+.score-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+.score-high{background:var(--green-bg);color:var(--green);}
+.score-mid {background:var(--amber-bg);color:var(--amber);}
+.score-low {background:var(--red-bg);color:var(--red);}
+
+/* ── BADGES ── */
+.badge-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.bdg {
+  display:flex;align-items:center;gap:7px;
+  padding:7px 13px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  border:1px solid transparent;
+  transition:transform .15s;
+}
+.bdg:hover{transform:translateY(-2px);}
+.bdg.earned{background:var(--gold2);color:#0D1B2A;border-color:var(--gold);}
+.bdg.locked{background:rgba(255,255,255,0.04);color:var(--muted);border-color:var(--border);}
+.bdg .bi{font-size:15px;}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
+.empty .e-ico{font-size:32px;margin-bottom:10px;}
+
+/* ── FULL WIDTH CARD ── */
+.full-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:16px;}
+
+/* ── STREAKS ── */
+.streak-fire{font-size:24px;margin-right:6px;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.metric-card,.card,.full-card{animation:fadeUp .4s ease both;}
+.metric-card:nth-child(1){animation-delay:.05s;}
+.metric-card:nth-child(2){animation-delay:.10s;}
+.metric-card:nth-child(3){animation-delay:.15s;}
+.metric-card:nth-child(4){animation-delay:.20s;}
+
+/* ── NOT LOGGED IN ── */
+#not-logged{display:none;text-align:center;padding:100px 20px;}
+#not-logged h2{font-size:22px;color:var(--gold);margin-bottom:12px;}
+#not-logged p{color:var(--muted);font-size:14px;margin-bottom:24px;}
+#not-logged a{background:var(--gold);color:#0D1B2A;font-weight:700;padding:12px 28px;border-radius:30px;text-decoration:none;font-size:14px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="logo-link">← Hamza Hoca</a>
+  </div>
+  <div class="topbar-left" id="tb-user" style="display:none;">
+    <div class="avatar" id="tb-avatar">?</div>
+    <span class="username-text" id="tb-username">—</span>
+    <span class="level-badge" id="tb-level">—</span>
+  </div>
+  <button class="btn-logout" id="btn-logout" onclick="doLogout()" style="display:none;">Çıkış Yap</button>
+</div>
+
+<!-- NOT LOGGED IN STATE -->
+<div id="not-logged">
+  <div style="font-size:48px;margin-bottom:16px;">🔐</div>
+  <h2>Giriş Yapmalısın</h2>
+  <p>Profilini görmek için önce giriş yapman gerekiyor.</p>
+  <a href="index.html">Ana Sayfaya Dön</a>
+</div>
+
+<!-- PROFILE CONTENT -->
+<div class="page" id="profile-page" style="display:none;">
+
+  <!-- METRIC CARDS -->
+  <div class="sec-title">Genel Özet</div>
+  <div class="metric-grid">
+    <div class="metric-card" style="--accent-color:var(--green);">
+      <div class="metric-val" id="m-total">0</div>
+      <div class="metric-lbl">Tamamlanan Test</div>
+    </div>
+    <div class="metric-card" style="--accent-color:var(--blue);">
+      <div class="metric-val" id="m-avg">—</div>
+      <div class="metric-lbl">Ortalama Skor</div>
+    </div>
+    <div class="metric-card" style="--accent-color:var(--amber);">
+      <div class="metric-val" id="m-streak">0 🔥</div>
+      <div class="metric-lbl">Gün Serisi</div>
+    </div>
+    <div class="metric-card" style="--accent-color:var(--purple);">
+      <div class="metric-val" id="m-badges">0</div>
+      <div class="metric-lbl">Kazanılan Rozet</div>
+    </div>
+  </div>
+
+  <!-- SKILL BARS + GOAL -->
+  <div class="two-col">
+    <div class="card">
+      <div class="sec-title">Beceri Dağılımı</div>
+      <div id="skill-bars">
+        <div class="empty"><div class="e-ico">📊</div>Henüz test çözmedin.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Haftalık Hedef</div>
+      <div class="goal-wrap">
+        <div class="goal-ring">
+          <div class="gn" id="g-done">0</div>
+          <div class="gl">/ <span id="g-target">5</span></div>
+        </div>
+        <div class="goal-info">
+          <div class="gt">Bu hafta <span id="g-target2">5</span> test çöz</div>
+          <div class="goal-bar"><div class="goal-fill" id="g-fill" style="width:0%"></div></div>
+          <div class="goal-sub" id="g-sub">Haydi başla!</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;">
+        <div class="sec-title">Son 2 Hafta Aktivitesi</div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY + BADGES -->
+  <div class="two-col">
+    <div class="card">
+      <div class="sec-title">Son Aktiviteler</div>
+      <div id="history-list">
+        <div class="empty"><div class="e-ico">📋</div>Henüz aktivite yok.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Rozetler</div>
+      <div class="badge-grid" id="badge-grid">
+        <div class="empty"><div class="e-ico">🏅</div>İlk testini çöz ve rozet kazan!</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   STORAGE HELPERS
+══════════════════════════════════════ */
+const USER_KEY  = 'hamzaUser';
+const DATA_KEY  = () => `hamzaProgress_${getUser()}`;
+
+function getUser()   { return sessionStorage.getItem(USER_KEY) || localStorage.getItem(USER_KEY) || ''; }
+function getHistory(){ try{ return JSON.parse(localStorage.getItem(DATA_KEY()) || '[]'); } catch{ return []; } }
+
+/* ══════════════════════════════════════
+   PUBLIC API — called by test pages
+   Usage:
+     HamzaProgress.save({
+       testId:   'okuma1.html',
+       testName: 'Okuma Sınavı 1',
+       category: 'okuma',       // okuma | dinleme | kelime | konusma
+       score:    85              // 0-100
+     });
+══════════════════════════════════════ */
+window.HamzaProgress = {
+  save(data) {
+    const user = getUser();
+    if (!user) return;
+    const key = `hamzaProgress_${user}`;
+    let arr = [];
+    try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
+    arr.unshift({
+      testId:   data.testId   || 'unknown',
+      testName: data.testName || 'Test',
+      category: data.category || 'diger',
+      score:    Math.round(Math.max(0, Math.min(100, data.score))),
+      date:     new Date().toISOString()
+    });
+    if (arr.length > 200) arr = arr.slice(0, 200); // max 200 kayıt
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+};
+
+/* ══════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════ */
+function doLogout() {
+  sessionStorage.removeItem(USER_KEY);
+  localStorage.removeItem(USER_KEY);
+  window.location.href = 'index.html';
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+function init() {
+  const user = getUser();
+  if (!user) {
+    document.getElementById('not-logged').style.display = 'block';
+    return;
+  }
+  document.getElementById('profile-page').style.display = 'block';
+  document.getElementById('tb-user').style.display    = 'flex';
+  document.getElementById('btn-logout').style.display = 'block';
+  document.getElementById('tb-username').textContent  = user;
+  document.getElementById('tb-avatar').textContent    = user.substring(0,2).toUpperCase();
+
+  const history = getHistory();
+  renderMetrics(history);
+  renderSkillBars(history);
+  renderGoal(history);
+  renderCalendar(history);
+  renderHistory(history);
+  renderBadges(history);
+}
+
+/* ══════════════════════════════════════
+   METRICS
+══════════════════════════════════════ */
+function renderMetrics(hist) {
+  const total = hist.length;
+  const avg   = total ? Math.round(hist.reduce((s,r)=>s+r.score,0)/total) : null;
+  const streak = calcStreak(hist);
+
+  document.getElementById('m-total').textContent  = total;
+  document.getElementById('m-avg').textContent    = avg !== null ? avg+'%' : '—';
+  document.getElementById('m-streak').textContent = streak + ' 🔥';
+
+  // level
+  let level = 'Başlangıç';
+  if (total >= 30) level = 'C1 Adayı';
+  else if (total >= 20) level = 'B2 Seviyesi';
+  else if (total >= 10) level = 'B1 Seviyesi';
+  else if (total >= 5)  level = 'A2 Seviyesi';
+  document.getElementById('tb-level').textContent = level;
+}
+
+/* ══════════════════════════════════════
+   STREAK (consecutive days)
+══════════════════════════════════════ */
+function calcStreak(hist) {
+  if (!hist.length) return 0;
+  const days = [...new Set(hist.map(r => r.date.slice(0,10)))].sort().reverse();
+  let streak = 1, today = new Date().toISOString().slice(0,10);
+  if (days[0] !== today) return 0; // dün yoksa sıfır
+  for (let i = 1; i < days.length; i++) {
+    const diff = (new Date(days[i-1]) - new Date(days[i])) / 86400000;
+    if (diff === 1) streak++; else break;
+  }
+  return streak;
+}
+
+/* ══════════════════════════════════════
+   SKILL BARS
+══════════════════════════════════════ */
+const CAT_META = {
+  okuma:    { label:'Okuma',    color:'#4fa8e8' },
+  dinleme:  { label:'Dinleme',  color:'#f5a623' },
+  kelime:   { label:'Kelime',   color:'#2dd4a0' },
+  konusma:  { label:'Konuşma',  color:'#a78bfa' },
+  diger:    { label:'Diğer',    color:'#7a8fa6' },
+};
+
+function renderSkillBars(hist) {
+  if (!hist.length) return;
+  const map = {};
+  hist.forEach(r => {
+    const cat = r.category in CAT_META ? r.category : 'diger';
+    if (!map[cat]) map[cat] = [];
+    map[cat].push(r.score);
+  });
+  const el = document.getElementById('skill-bars');
+  el.innerHTML = '';
+  Object.entries(map).forEach(([cat, scores]) => {
+    const avg = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+    const meta = CAT_META[cat] || CAT_META.diger;
+    el.innerHTML += `
+      <div class="skill-row">
+        <div class="skill-head">
+          <span class="skill-name">${meta.label} <span style="color:var(--muted);font-size:11px;">(${scores.length} test)</span></span>
+          <span class="skill-pct" style="color:${meta.color}">${avg}%</span>
+        </div>
+        <div class="skill-bar">
+          <div class="skill-fill" style="width:0%;background:${meta.color}" data-w="${avg}"></div>
+        </div>
+      </div>`;
+  });
+  // animate widths
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.skill-fill').forEach(f => {
+      f.style.width = f.dataset.w + '%';
+    });
+  });
+}
+
+/* ══════════════════════════════════════
+   GOAL (weekly)
+══════════════════════════════════════ */
+function renderGoal(hist) {
+  const GOAL = 5;
+  const weekAgo = new Date(Date.now() - 7*86400000).toISOString();
+  const done = hist.filter(r => r.date >= weekAgo).length;
+  const pct  = Math.min(100, Math.round(done/GOAL*100));
+  document.getElementById('g-done').textContent   = done;
+  document.getElementById('g-target').textContent = GOAL;
+  document.getElementById('g-target2').textContent= GOAL;
+  document.getElementById('g-fill').style.width   = pct + '%';
+  const left = Math.max(0, GOAL - done);
+  document.getElementById('g-sub').textContent =
+    left === 0 ? '🎉 Hedefe ulaştın!' :
+    `${left} test kaldı`;
+}
+
+/* ══════════════════════════════════════
+   CALENDAR HEATMAP (14 days)
+══════════════════════════════════════ */
+function renderCalendar(hist) {
+  const map = {};
+  hist.forEach(r => {
+    const d = r.date.slice(0,10);
+    map[d] = (map[d]||0) + 1;
+  });
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i*86400000).toISOString().slice(0,10);
+    const cnt = map[d] || 0;
+    const lvl = cnt === 0 ? '' : cnt === 1 ? 'l1' : cnt <= 3 ? 'l2' : 'l3';
+    const title = cnt ? `${d}: ${cnt} test` : d;
+    grid.innerHTML += `<div class="cal-cell ${lvl}" title="${title}"></div>`;
+  }
+}
+
+/* ══════════════════════════════════════
+   HISTORY LIST
+══════════════════════════════════════ */
+function renderHistory(hist) {
+  const el = document.getElementById('history-list');
+  if (!hist.length) return;
+  el.innerHTML = hist.slice(0,8).map(r => {
+    const scoreClass = r.score >= 75 ? 'score-high' : r.score >= 50 ? 'score-mid' : 'score-low';
+    const dateStr = new Date(r.date).toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'});
+    const catMeta = CAT_META[r.category] || CAT_META.diger;
+    return `<div class="hist-row">
+      <div>
+        <div class="hist-name">${escHtml(r.testName)}</div>
+        <div class="hist-date">${dateStr} · <span style="color:${catMeta.color}">${catMeta.label}</span></div>
+      </div>
+      <span class="score-pill ${scoreClass}">${r.score}%</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+const BADGE_DEFS = [
+  { id:'first',   icon:'⭐', label:'İlk Test',       check: h => h.length >= 1 },
+  { id:'five',    icon:'🎯', label:'5 Test',          check: h => h.length >= 5 },
+  { id:'ten',     icon:'🏅', label:'10 Test',         check: h => h.length >= 10 },
+  { id:'twenty',  icon:'🏆', label:'20 Test',         check: h => h.length >= 20 },
+  { id:'perfect', icon:'💯', label:'100 Puan',        check: h => h.some(r=>r.score===100) },
+  { id:'streak7', icon:'🔥', label:'7 Gün Serisi',    check: h => calcStreak(h) >= 7 },
+  { id:'reader',  icon:'📖', label:'Okuma Ustası',    check: h => h.filter(r=>r.category==='okuma').length >= 5 },
+  { id:'listener',icon:'🎧', label:'Dinleme Ustası',  check: h => h.filter(r=>r.category==='dinleme').length >= 3 },
+  { id:'vocab',   icon:'📚', label:'Kelime Şampiyonu',check: h => h.filter(r=>r.category==='kelime').length >= 5 },
+  { id:'speaker', icon:'💬', label:'Konuşmacı',       check: h => h.filter(r=>r.category==='konusma').length >= 3 },
+];
+
+function renderBadges(hist) {
+  const earned = BADGE_DEFS.filter(b => b.check(hist));
+  const locked  = BADGE_DEFS.filter(b => !b.check(hist));
+  const count   = earned.length;
+  document.getElementById('m-badges').textContent = count;
+
+  const el = document.getElementById('badge-grid');
+  if (!hist.length) return;
+  el.innerHTML = [
+    ...earned.map(b => `<span class="bdg earned"><span class="bi">${b.icon}</span>${b.label}</span>`),
+    ...locked.map(b  => `<span class="bdg locked"><span class="bi">🔒</span>${b.label}</span>`)
+  ].join('');
+}
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── START ── */
+init();
+</script>
+</body>
+</html>
