@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yazma Soruları - Hamza Hoca ile Türkçe Öğreniyorum</title>
+<style>
+/* ═══════════════════════════════════════
+   RESET & BASE (index.html ile aynı stil)
+═══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0D1B2A 0%, #1a2a3a 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+}
+
+/* GERİ BUTONU - SOL ÜST KÖŞEDE SABİT (KAYDIRILINCA KAYBOLUR) */
+.back-button {
+  position: relative;
+  top: 0;
+  left: 0;
+  background: #1a2332;
+  border: 2px solid #F5C842;
+  border-radius: 40px;
+  padding: 10px 20px;
+  color: #F5C842;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+}
+
+.back-button:hover {
+  background: #2a3a4a;
+  transform: translateX(-3px);
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+header h1 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 800;
+  color: #F5C842;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  letter-spacing: 0.02em;
+}
+
+.header-line {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #F5C842, transparent);
+  margin: 0 auto 14px;
+}
+
+.stars {
+  font-size: 1.2rem;
+  color: #F5C842;
+  letter-spacing: .4em;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* BUTTON GRID */
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 600px) { .btn-grid { grid-template-columns: 1fr; } }
+
+.cat-btn {
+  background: #1a2332;
+  border: 2px solid #F5C842;
+  border-radius: 16px;
+  padding: 16px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: background .22s, transform .18s;
+  width: 100%;
+}
+
+.cat-btn:hover {
+  background: #2a3a4a;
+  transform: translateY(-3px);
+}
+
+.cat-btn.active {
+  background: #2a3a4a;
+  box-shadow: 0 0 0 1px #F5C842;
+}
+
+.cat-btn .emoji {
+  font-size: 1.8rem;
+}
+
+.cat-btn .label {
+  font-size: clamp(0.9rem, 1.5vw, 1rem);
+  font-weight: bold;
+  color: #F5C842;
+  text-align: center;
+}
+
+/* CONTENT PANEL */
+.content-panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height .45s cubic-bezier(.4,0,.2,1), opacity .35s ease;
+  margin-bottom: 0;
+  border-radius: 20px;
+}
+
+.content-panel.open {
+  max-height: 3000px;
+  opacity: 1;
+  margin-bottom: 24px;
+}
+
+.panel-header {
+  background: #1a2332;
+  padding: 16px 24px;
+  border-radius: 20px 20px 0 0;
+  border-bottom: 2px solid #F5C842;
+}
+
+.panel-header h2 {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  font-weight: bold;
+  color: #F5C842;
+}
+
+.panel-body {
+  background: white;
+  padding: 24px;
+  border-radius: 0 0 20px 20px;
+}
+
+/* SORU GRUPLARI */
+.soru-grubu {
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 24px;
+}
+
+.soru-grubu:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.soru-yili {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #F5C842;
+  background: #1a2332;
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 30px;
+  margin-bottom: 16px;
+}
+
+.soru-baslik {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #0D1B2A;
+  margin: 12px 0 8px 0;
+  padding-left: 8px;
+  border-left: 4px solid #F5C842;
+}
+
+.soru-metin {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* E-POSTA DETAY BÖLÜMÜ - DAHA GÜZEL GÖRÜNÜM */
+.eposta-detay {
+  background: linear-gradient(135deg, #fef5e8 0%, #fff7e8 100%);
+  padding: 18px;
+  border-radius: 14px;
+  margin: 12px 0;
+  font-style: normal;
+  border-left: 5px solid #F5C842;
+  border-right: 1px solid #ffe0b5;
+  color: #3a2c1a;
+  line-height: 1.65;
+  font-size: 0.95rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.eposta-detay strong {
+  color: #c97e00;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  background: #2a9d8f;
+}
+
+footer {
+  text-align: center;
+  margin-top: 60px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+}
+footer span { color: #F5C842; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <a href="javascript:history.back()" class="back-button">← Geri</a>
+
+  <header>
+    <h1>📝 YAZMA SORULARI</h1>
+    <div class="header-line"></div>
+    <div class="stars">★ ★ ★ ★ ★</div>
+    <p class="subtitle">Kompozisyon ve E-posta Yazma Alıştırmaları</p>
+  </header>
+
+  <div class="btn-grid">
+    <button class="cat-btn" onclick="toggle('cikmis-kompozisyon', this)">
+      <span class="emoji">📝</span>
+      <span class="label">ÇIKMIŞ KOMPOZİSYON SORULARI</span>
+    </button>
+    <button class="cat-btn" onclick="toggle('cikmis-eposta', this)">
+      <span class="emoji">📧</span>
+      <span class="label">ÇIKMIŞ E-POSTA SORULARI</span>
+    </button>
+    <button class="cat-btn" onclick="toggle('ornek-kompozisyon', this)">
+      <span class="emoji">✍️</span>
+      <span class="label">ÖRNEK KOMPOZİSYON SORULARI</span>
+    </button>
+    <button class="cat-btn" onclick="toggle('ornek-eposta', this)">
+      <span class="emoji">💌</span>
+      <span class="label">ÖRNEK E-POSTA SORULARI</span>
+    </button>
+  </div>
+
+  <!-- ÇIKMIŞ KOMPOZİSYON SORULARI -->
+  <div class="content-panel" id="cikmis-kompozisyon">
+    <div class="panel-header"><h2>📝 Çıkmış Kompozisyon Soruları</h2></div>
+    <div class="panel-body">
+       <div class="soru-grubu"><div class="soru-yili">📅 2026 12 Nisan</div><div class="soru-metin">Dil öğreniminde öğretmen rehberliği mi ya da yapay zeka ve dijital uygulamalar mı daha etkili sonuçlar vermektedir? En az 200 kelime.</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2026 11 Nisan</div><div class="soru-metin">Ormanların yok olmasının sebepleri nelerdir? Ormanları korumak için neler yapılmalıdır?</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2026 Mart</div><div class="soru-metin">İşe alım süreçlerinde adayın akademik yeterliliği (diploması) mı yoksa mesleki deneyimi (iş tecrübesi) mi daha fazla dikkate alınmalıdır?</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2026 Şubat</div><div class="soru-metin">Bazı insanlara göre haftada dört gün çalışmak iş verimliliğini artırmakta ve insan sağlığı üzerinde olumlu etkiler yaratmaktadır. Siz bu görüşe katılıyor musunuz yoksa katılmıyor musunuz? Görüşünüzü nedenleriyle birlikte açıklayınız.</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2026 Ocak</div><div class="soru-metin">Şehirlerde hava kirliliğinin artmasının başlıca nedenleri nelerdir ve bu soruna karşı hangi çözüm yolları uygulanabilir?</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2025 Aralık</div><div class="soru-metin">Sağlıklı bir yaşam için spor yapmak mı yoksa dengeli beslenmek mi daha önemlidir?</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2025 Kasım</div><div class="soru-metin">Sosyal medyada özgüven mi yoksa denetim mi ön planda olmalıdır?</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📅 2025 Ekim</div><div class="soru-metin">Çevreyi korumak bireylerin mi yoksa devletlerin mi sorumluluğundadır?</div></div>
+    </div>
+  </div>
+
+  <!-- ÇIKMIŞ E-POSTA SORULARI (DETAYLI) -->
+  <div class="content-panel" id="cikmis-eposta">
+    <div class="panel-header"><h2>📧 Çıkmış E-posta Soruları</h2></div>
+    <div class="panel-body">
+      
+        <div class="soru-grubu">
+        <div class="soru-yili">📅 2026 12 Nisan</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Üniversite Kütüphane Müdürlüğünden: 
+Sevgili Bilge,
+
+Üniversitemiz kütüphanesi tarafından, öğrencilerin edebiyata olan ilgisini artırmak ve farklı bakış açıları kazandırmak amacıyla tanınmış yazarlarla bir buluşma etkinliği düzenlenmesi planlanmaktadır. Bu etkinliğin öğrenciler için faydalı olacağı düşünülmektedir. Ancak bazı öğrenciler ders programlarının aksayabileceği konusunda endişelerini dile getirmektedir.
+Sizce bu tür bir etkinlik düzenlenmesi doğru bir karar mıdır? Bu buluşma öğrencilere ne gibi faydalar sağlayabilir? Siz olsaydınız bu etkinliği daha verimli hale getirmek için neler yapardınız? Görüşleriniz bizim için önemlidir.</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Aynı üniversitede okuyan arkadaşınız Aren Aydın'a bir mesaj yazınız. Bu etkinlik hakkındaki düşüncelerinizi ve duygularınızı ifade ediniz. (Yaklaşık 50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Kütüphane müdürlüğüne bir e-posta yazınız. Etkinlik hakkındaki görüşlerinizi, önerilerinizi ve beklentilerinizi belirtiniz. (120–150 kelime)</div>
+      </div>
+
+       <div class="soru-grubu">
+        <div class="soru-yili">📅 2026 11 Nisan</div>
+        <div class="eposta-detay"><strong>📩 Mahalle Yönetimi:</strong> Sevgili Mahalle Sakini, Mahallemizde yaşanan trafik sorunlarını azaltmak amacıyla yolun genişletilmesi planlanmaktadır. Bu projenin ulaşımı kolaylaştıracağı düşünülmektedir. Ancak bazı komşularımız, bu çalışmanın ağaçlara ve yeşil alanlara zarar vereceği konusunda endişelidir.
+Sizce yolun genişletilmesi doğru bir karar mıdır? Bu proje mahalleye ne gibi faydalar veya zararlar getirebilir? Siz olsaydınız nasıl bir çözüm önerirdiniz? Görüşleriniz bizim için önemlidir.
+</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Aynı mahallede yaşayan arkadaşınız Aren Aydın'a bir mesaj yazınız. Bu durum hakkındaki düşüncelerinizi ve duygularınızı ifade ediniz. (Yaklaşık 50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Mahalle yönetimine bir e-posta yazınız. Yolun genişletilmesi hakkındaki görüşlerinizi, önerilerinizi ve beklentilerinizi belirtiniz. (120–150 kelime)</div>
+      </div>
+
+        <div class="soru-grubu">
+        <div class="soru-yili">📅 2026 Mart</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Üniversitenizin rektörlüğünden: Ders sırasında cep telefonu kullanımının yasaklanması planlanmaktadır. Sizce bu yasak doğru bir karar mıdır? Eğitim kalitesini artırmak için başka hangi düzenlemeler yapılabilir?</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a bir mektup yazınız. Duygularınızı ve telefon kullanımının dersleri nasıl etkileyebileceğine dair düşüncelerinizi ifade ediniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Üniversite rektörüne bir mektup yazınız. Telefon yasağı hakkındaki görüşlerinizi, önerilerinizi ve beklentilerinizi belirtiniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📅 2026 Şubat</div>
+        <div class="eposta-detay"><strong>📩 Belediye Duyurusu:</strong> Semtinizdeki 80 yıllık tarihi tren garı binasının yıkılması ve yerine modern bir bina yapılması planlanmaktadır. Görüşlerinizi bekliyoruz.</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a bir e-posta yazınız. Tarihi binanın yıkılacak olmasıyla ilgili hissettiklerinizi ve düşüncelerinizi ifade ediniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Belediye yetkilisine bir mektup/e-posta yazınız. Binanın kültürel değeri hakkındaki önerilerinizi ve yeni binadan beklentilerinizi belirtiniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📅 2026 Ocak</div>
+        <div class="eposta-detay"><strong>📩 İnternet Servis Sağlayıcısından:</strong> Altyapı çalışmaları nedeniyle bazı bölgelerde kısa süreli bağlantı kesintileri yaşanabilecektir. İnternet hizmetinin daha iyi hale gelmesi için başka hangi iyileştirmeler yapılmalıdır?</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a bir mektup yazınız. Bu durumla ilgili duygularınızı ve internet hizmetinin nasıl geliştirilebileceğine dair düşüncelerinizi ifade ediniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Servis sağlayıcı yetkilisine bir mektup yazınız. Kesintilerle ilgili görüşlerinizi, hizmet kalitesine dair önerilerinizi ve beklentilerinizi belirtiniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📅 2025 Aralık</div>
+        <div class="eposta-detay"><strong>📩 Okul Yönetiminden:</strong> Öğrencilerin tarih bilincini artırmak için tarihi yerlere yönelik bir gezi düzenlenecektir. Gezinin daha verimli olması için başka hangi düzenlemeler yapılmalıdır?</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a bir mektup yazınız. Geziyle ilgili duygularınızı ve gezinin nasıl daha faydalı hale getirilebileceğine dair düşüncelerinizi belirtiniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Okul müdürüne bir mektup yazınız. Geziyle ilgili görüşlerinizi, önerilerinizi ve öğrenciler açısından sağlayacağı katkıları ifade ediniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📅 2025 Kasım</div>
+        <div class="eposta-detay"><strong>📩 Kültür Biriminden:</strong> Şehir Sanat Galerisi yenileme sürecine girecektir. Galeri iki hafta kapalı olacaktır. Galeriye başka hangi yenilikler eklenmelidir?</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a mektup yazınız. Bu durumla ilgili duygularınızı ve belediyenin neler yapması gerektiği konusundaki düşüncelerinizi ifade ediniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Kültür birimi müdürüne bir mektup yazınız. Galerinin geçici olarak kapatılmasıyla ilgili duygularınızı, yenileme sürecine dair önerilerinizi ve beklentilerinizi belirtiniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📅 2025 Ekim</div>
+        <div class="eposta-detay"><strong>📩 Çevre Grubu Yöneticisinden:</strong> Çevresel sorunların arttığı bölgemizde farkındalık kampanyası başlatılacaktır. Çevreyi koruma görevi bireylere mi yoksa devlet kurumlarına mı aittir? Kampanyada hangi mesajlar öne çıkarılmalıdır?</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Arkadaşınız Aren Aydın'a kısa bir mektup yazınız. Bu durumla ilgili duygularınızı ve grubun bu konuda neler yapması gerektiğini yazınız. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Yöneticiye bir mektup yazınız. Çevreyi koruma konusunda kampanya sürecinde neler yapılması gerektiğine dair düşüncelerinizi ifade ediniz. (120-150 kelime)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÖRNEK KOMPOZİSYON SORULARI -->
+  <div class="content-panel" id="ornek-kompozisyon">
+    <div class="panel-header"><h2>✍️ Örnek Kompozisyon Soruları</h2></div>
+    <div class="panel-body">
+      <div class="soru-grubu"><div class="soru-yili">📝 Soru 1</div><div class="soru-metin"><strong>Uzaktan Çalışma ve Sosyal Bağlar</strong><br><br>Geleceğin iş dünyası üzerine düzenlenen bir çevrimiçi forumda şu soru tartışılıyor: "Evden çalışma modelinin (remote) yaygınlaşması, iş verimliliğini artırsa da bireylerin sosyal becerilerini ve ekip ruhunu kalıcı olarak zayıflatır mı?" Görüşlerinizi gerekçeler ve örneklerle birlikte bir forum mesajı olarak yazınız. (180-200 kelime)</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📝 Soru 2</div><div class="soru-metin"><strong>Yapay Zeka ve Yaratıcılık</strong><br><br>Teknoloji ve sanat konulu bir dergiye yazı hazırlıyorsunuz. Soru şu: "Yapay zeka tarafından üretilen tablolar, besteler veya metinler 'gerçek sanat' olarak kabul edilebilir mi, yoksa sanat sadece insan duygularının bir ürünü mü olmalıdır?" Görüşlerinizi gerekçeler ve örneklerle birlikte bir makale formatında yazınız. (180-200 kelime)</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📝 Soru 3</div><div class="soru-metin"><strong>Modern Kentleşme ve Yeşil Alanlar</strong><br><br>Şehir planlaması üzerine bir tartışma platformuna katılıyorsunuz. Tartışma konusu: "Ekonomik kalkınma ve yeni konut ihtiyacı için şehirlerdeki son yeşil alanların da feda edilmesi kaçınılmaz bir süreç midir?" Görüşlerinizi gerekçeler ve örneklerle birlikte bir blog yazısı olarak kaleme alınız. (180-200 kelime)</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📝 Soru 4</div><div class="soru-metin"><strong>Gençlerin Kariyer Seçimi ve Finansal Kaygılar</strong><br><br>Eğitim üzerine bir blogda şu soru soruluyor: "Gençler meslek seçerken sadece yetenek ve tutkularının peşinden mi gitmelidir, yoksa günümüz ekonomik şartlarında sadece yüksek kazanç getirecek işlere mi odaklanmalıdır?" Görüşlerinizi gerekçeler ve örneklerle birlikte bir post yazısı olarak yazınız. (180-200 kelime)</div></div>
+      <div class="soru-grubu"><div class="soru-yili">📝 Soru 5</div><div class="soru-metin"><strong>Reklam Dünyası ve Tüketim Alışkanlıkları</strong><br><br>Tüketici hakları üzerine bir sempozyumun internet sayfasında şu soru soruluyor: "Günümüzdeki hedef kitle odaklı reklamlar, tüketicinin ihtiyacı olmayan ürünleri alması için bir psikolojik baskı unsuru mudur?" Görüşlerinizi gerekçeler ve örneklerle birlikte bir tartışma metni olarak yazınız. (180-200 kelime)</div></div>
+    </div>
+  </div>
+
+  <!-- ÖRNEK E-POSTA SORULARI (SADECE SORULAR, CEVAPSIZ) -->
+  <div class="content-panel" id="ornek-eposta">
+    <div class="panel-header"><h2>💌 Örnek E-posta Soruları</h2></div>
+    <div class="panel-body">
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📧 Soru 1</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Sevgili Aras Bulut! Kütüphanemizin giriş katına, okurların dinlenebileceği küçük bir kafe alanı eklemeyi planlıyoruz. Bu süreçte giriş katı bir hafta kapalı olacak. Menüde sağlıklı atıştırmalıklar ve sıcak içecekler olacak. Sizce bu alanın tasarımı nasıl olmalı? Ayrıca, kütüphane ortamının sessizliğini korumak için ne gibi önlemler alabiliriz? Yönetici: Deniz Aksoy</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Aynı kütüphaneyi kullanan arkadaşınız Bora Kaçmaz'a bir mektup yazınız. Duygularınızı ve yönetimden beklentilerinizi belirtiniz. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Yöneticiye bir e-posta yazınız. Bu yenilik hakkındaki düşüncelerinizi, tasarım önerilerinizi ve sessizlik konusundaki endişelerinizi ifade ediniz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📧 Soru 2</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Sevgili Pelin Yılmaz! Enerji tasarrufu çalışmaları nedeniyle spor salonumuzun kapanış saatini akşam 23:00'ten 21:00'e çekmeyi planlıyoruz. Bu durumun bazı üyelerimizi etkileyeceğinin farkındayız. Sizce bu değişikliğin yaratacağı mağduriyeti önlemek için sabah saatlerinde ne tür ek hizmetler sunabiliriz? Başka önerileriniz var mı? Müdür: Kerem Tunç</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Aynı salona giden arkadaşınız Sude Naz'a bir mektup yazınız. Bu değişikliğin sizin antrenman programınızı nasıl etkilediğini ve hislerinizi yazınız. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Müdür Bey'e bir mektup yazınız. Saat değişikliği hakkındaki görüşlerinizi ve üyelerin motivasyonunu korumak için çözüm önerilerinizi sununuz. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📧 Soru 3</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Sevgili Ege Karakaş! Gelecek ay düzenleyeceğimiz Efes Antik Kenti gezisinin programını hazırlıyoruz. Geziye bir müze ziyareti daha eklemek istiyoruz ancak bütçemiz sınırlı. Sizce hangi müze seçilmeli? Ayrıca, yolculuk sırasında öğrencilerin sıkılmaması için ne tür öğretici oyunlar veya aktiviteler planlayabiliriz? Öğretmen: Hakan Demir</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Geziye katılacak olan arkadaşınız Nilay Yıldız'a kısa bir not yazınız. Gezi hakkındaki heyecanınızı ve müze seçimi konusundaki fikrinizi paylaşınız. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Hakan Demir'e resmi bir e-posta yazınız. Müze önerinizi gerekçeleriyle sununuz ve yolculuk aktiviteleri hakkındaki yaratıcı fikirlerinizi paylaşınız. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📧 Soru 4</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Sevgili Gizem Aydın! Şirketimizde artık kağıt bardak ve plastik şişe kullanımı tamamen yasaklanacaktır. Her çalışanın kendi kupasını ve matarasını getirmesi gerekmektedir. Bu geçiş sürecini kolaylaştırmak için sizce ofis içinde ne tür düzenlemeler yapmalıyız? Çalışanların bu projeyi sahiplenmesi için bir ödül sistemi kurulmalı mı? İK Müdürü: Melis Erten</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> İş arkadaşınız Caner Soylu'ya bir mesaj yazınız. Bu yeni kural hakkındaki duygularınızı ve ofiste işlerin nasıl kolaylaşabileceğini yazınız. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> İK Müdürü'ne resmi bir mektup yazınız. "Sıfır atık" projesine desteğinizi, ofis içi düzenleme önerilerinizi ve motivasyon yöntemlerini anlatınız. (120-150 kelime)</div>
+      </div>
+      
+      <div class="soru-grubu">
+        <div class="soru-yili">📧 Soru 5</div>
+        <div class="eposta-detay"><strong>📩 Gelen E-posta:</strong> Sevgili Mert Günay! Platformumuzun arayüzünü tamamen yeniliyoruz. Önümüzdeki hafta sonu sistem bakım nedeniyle 48 saat kapalı kalacaktır. Bu sürede ders videolarına erişim sağlanamayacaktır. Sizce yeni arayüzde hangi özellikler (not alma, hızlandırma vb.) mutlaka olmalı? Bu kesinti nedeniyle kullanıcılara nasıl bir telafi sunabiliriz? Platform Yöneticisi: Selen Kılıç</div>
+        <div class="soru-metin"><strong>Görev 1.1:</strong> Aynı platformdan ders alan arkadaşınız Ömer Faruk'a bir e-posta yazınız. Sistemin kapalı kalmasıyla ilgili planlarınızı ve beklentilerinizi yazınız. (50 kelime)</div>
+        <div class="soru-metin"><strong>Görev 1.2:</strong> Yöneticiye bir mektup yazınız. Teknik özellik önerilerinizi ve kullanıcı memnuniyetini sağlamak için telafi (ek süre, indirim vb.) fikirlerinizi belirtiniz. (120-150 kelime)</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 <span>Hamza Hoca</span> — Türkçe Öğrenme Platformu | Yazma Alıştırmaları</p>
+  </footer>
+</div>
+
+<script>
+function toggle(id, btn) {
+  const panel = document.getElementById(id);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+    // Panel açıldıktan sonra animasyon bitince scroll yap
+    setTimeout(function() {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+</script>
+</body>
+</html>
