@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<script>
+/* Test bittikten sonra bu fonksiyonu çağır: */
+function skorKaydet(skor) {
+  // Kullanıcı giriş yapmışsa kaydet
+  const user = sessionStorage.getItem('hamzaUser') || localStorage.getItem('hamzaUser');
+  if (!user) return;
+
+  const key = `hamzaProgress_${user}`;
+  let arr = [];
+  try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
+
+  arr.unshift({
+    testId:   'BU_TEST_ID',        // ← dosya adı örn: 'okuma1.html'
+    testName: 'BU TEST ADINI YAZ', // ← örn: 'Okuma Sınavı 1'
+    category: 'okuma',             // ← okuma | dinleme | kelime | konusma
+    score:    Math.round(skor),    // ← 0-100 arası sayı
+    date:     new Date().toISOString()
+  });
+
+  if (arr.length > 200) arr = arr.slice(0, 200);
+  localStorage.setItem(key, JSON.stringify(arr));
+}
+
+/* KULLANIM ÖRNEĞİ — test sonuç ekranında:
+   skorKaydet(85);   // kullanıcı 85 aldıysa
+*/
+</script>
+html<script>
+  if (!sessionStorage.getItem('hamzaUser')) {
+    alert('Bu sayfa sadece üyeler içindir. Lütfen giriş yapın.');
+    window.location.replace('index.html');
+  }
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Türkçe Okuma Testi – Hamza Hoca</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700;800&family=Playfair+Display:wght@700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1209;
+    --paper: #faf7f0;
+    --cream: #f2ead8;
+    --accent: #c0392b;
+    --gold: #b8860b;
+    --muted: #7a6a55;
+    --success: #2e7d52;
+    --error: #c0392b;
+    --border: #d4c5a9;
+    --shadow: rgba(26,18,9,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  /* GERİ BUTONU */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.3rem;
+    background: transparent;
+    border: 2px solid #F5C842;
+    border-radius: 30px;
+    color: #F5C842;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    position: absolute;
+    top: 1.2rem;
+    left: 1.5rem;
+    z-index: 10;
+  }
+  .back-btn:hover {
+    background: #F5C842;
+    color: #1a2332;
+  }
+  @media (max-width: 600px) {
+    .back-btn { position: static; margin-bottom: 1rem; display: flex; justify-content: center; width: fit-content; margin-left: auto; margin-right: auto; }
+  }
+
+  header {
+    background: #1a2332;
+    color: var(--paper);
+    padding: 3rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(184,134,11,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    border: 2px solid #D4A017;
+    border-radius: 30px;
+    padding: 0.35rem 1.2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #1a2332;
+    background: #D4A017;
+    margin-bottom: 1.4rem;
+  }
+  header h1 {
+    font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    color: #D4A017;
+    text-shadow: 0 1px 12px rgba(212,160,23,0.2);
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+    -webkit-text-stroke: 0.5px #D4A017;
+  }
+  .header-stars {
+    color: #D4A017;
+    font-size: 1.3rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .header-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #D4A017, transparent);
+    margin: 0.5rem auto 2rem;
+  }
+  .header-cta-text {
+    font-size: 0.82rem;
+    color: #e8dfc8;
+    margin-bottom: 0.8rem;
+    font-style: normal;
+    letter-spacing: 0.01em;
+    font-weight: 600;
+  }
+  .tg-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 2rem;
+    background: #D4A017;
+    color: #1a2332;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+    position: relative;
+    z-index: 2;
+  }
+  .tg-btn:hover { background: #c49010; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(212,160,23,0.5); }
+  .tg-btn svg { flex-shrink: 0; fill: #229ED9; }
+
+  /* PROGRESS BAR */
+  .progress-wrap {
+    background: #1a2332;
+    padding: 0 2rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .progress-bar-outer {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+  .progress-text {
+    color: #b8a890;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 2px 12px var(--shadow);
+    overflow: hidden;
+  }
+  .section-header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    min-width: 2rem;
+  }
+  .section-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    color: var(--cream);
+  }
+  .section-body {
+    padding: 1.5rem;
+  }
+
+  /* READING TEXT */
+  .reading-text {
+    background: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.92rem;
+    line-height: 1.85;
+    color: #2a1f10;
+    border-radius: 0 2px 2px 0;
+  }
+  .reading-text p { margin-bottom: 0.8rem; }
+  .reading-text p:last-child { margin-bottom: 0; }
+
+  /* INSTRUCTIONS */
+  .instructions {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 1.2rem;
+    padding: 0.7rem 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 2px;
+  }
+
+  /* OPTIONS LIST */
+  .options-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+  }
+  .options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.4rem;
+    padding: 0.8rem;
+    background: #fdf9f3;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .option-pill {
+    padding: 0.3rem 0.8rem;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-family: 'Source Serif 4', serif;
+  }
+  .option-pill strong { color: var(--accent); }
+
+  /* QUESTIONS */
+  .question {
+    margin-bottom: 1.4rem;
+    padding-bottom: 1.4rem;
+    border-bottom: 1px solid #ede5d4;
+  }
+  .question:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .q-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .q-text {
+    font-size: 0.93rem;
+    margin-bottom: 0.8rem;
+    font-weight: 400;
+  }
+  .q-text .blank {
+    display: inline-block;
+    min-width: 120px;
+    border-bottom: 2px solid var(--gold);
+    text-align: center;
+    padding: 0 4px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* SELECT */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6a55' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    padding: 0.45rem 2rem 0.45rem 0.7rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.88rem;
+    color: var(--ink);
+    cursor: pointer;
+    min-width: 160px;
+    transition: border-color 0.2s;
+  }
+  select:focus { outline: none; border-color: var(--gold); }
+  select.correct { border-color: var(--success); background-color: #f0faf5; }
+  select.wrong { border-color: var(--error); background-color: #fff5f5; }
+
+  /* RADIO / CHOICE */
+  .choices { display: flex; flex-direction: column; gap: 0.5rem; }
+  .choice-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    border: 1.5px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: all 0.15s;
+    background: white;
+  }
+  .choice-label:hover { border-color: var(--gold); background: #fdf8ef; }
+  .choice-label input[type=radio] { display: none; }
+  .choice-key {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 1.1rem;
+    margin-top: 0.05rem;
+  }
+  .choice-label.selected { border-color: var(--gold); background: #fdf8ef; }
+  .choice-label.correct { border-color: var(--success); background: #f0faf5; }
+  .choice-label.correct .choice-key { color: var(--success); }
+  .choice-label.wrong { border-color: var(--error); background: #fff5f5; }
+  .choice-label.wrong .choice-key { color: var(--error); }
+  .choice-label.show-answer { border-color: var(--success); background: #f0faf5; }
+  .choice-label.show-answer .choice-key { color: var(--success); }
+
+  /* MATCHING */
+  .match-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    padding: 0.7rem;
+    background: #fdf9f3;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .match-num {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--accent);
+    min-width: 1.5rem;
+    padding-top: 0.25rem;
+  }
+  .match-text { flex: 1; font-size: 0.87rem; line-height: 1.5; }
+  .match-select { min-width: 140px; }
+
+  /* SUBMIT */
+  .submit-wrap {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .btn-submit {
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    padding: 0.9rem 3rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+  .btn-submit:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn-reset {
+    background: transparent;
+    color: var(--muted);
+    border: 1.5px solid var(--border);
+    padding: 0.9rem 2rem;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-left: 0.8rem;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { border-color: var(--muted); color: var(--ink); }
+
+  /* RESULTS */
+  #results {
+    display: none;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 2px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    box-shadow: 0 4px 24px var(--shadow);
+    animation: fadeUp 0.5s ease;
+  }
+  #results h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  #results .score-label { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: #b8a890; margin-bottom: 0.3rem; }
+  #results .score-detail { font-size: 0.9rem; color: #b8a890; margin-top: 0.5rem; font-style: italic; }
+  #results .feedback { margin-top: 1rem; font-size: 1rem; color: var(--cream); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ANSWER REVEAL */
+  .answer-reveal {
+    display: none;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--success);
+    font-weight: 600;
+  }
+  .answer-reveal.show { display: block; }
+
+  /* FEEDBACK INLINE */
+  .q-feedback {
+    display: none;
+    font-size: 0.78rem;
+    margin-top: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 2px;
+    font-style: italic;
+  }
+  .q-feedback.correct { display: block; color: var(--success); background: #f0faf5; }
+  .q-feedback.wrong { display: block; color: var(--error); background: #fff5f5; }
+
+  /* PROGRESS SEGMENTS */
+  .segments-bar {
+    flex: 1;
+    display: flex;
+    gap: 2px;
+  }
+  .seg {
+    flex: 1;
+    height: 8px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.3s ease;
+  }
+  .seg.filled { background: var(--success); }
+
+  /* TELEGRAM BUTTON — defined in header section above */
+
+  @media (max-width: 600px) {
+    .match-row { flex-direction: column; }
+    .match-select { min-width: 100%; }
+    select { min-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-btn" href="index.html">&#8592; Ana Sayfa</a>
+  <div class="header-badge">✦ Okuma Testi ✦</div>
+  <h1>HAMZA HOCA İLE<br>TÜRKÇE ÖĞRENİYORUM</h1>
+  <span class="header-stars">★★★★★</span>
+  <div class="header-divider"></div>
+  <div class="header-cta-text">Daha fazla içeriğe ücretsiz ulaşmak için Telegram kanalımıza katılın!</div>
+  <a href="https://t.me/TurkcheOzbekche" target="_blank" class="tg-btn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.28 13.6l-2.965-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.873.959z"/></svg>
+    Kanala Katıl
+  </a>
+</header>
+
+<div class="progress-wrap">
+  <div class="segments-bar" id="segmentsBar"></div>
+  <div class="progress-text" id="progressText">0 / 35</div>
+</div>
+
+<main>
+
+<!-- RESULTS BOX -->
+<div id="results">
+  <div class="score-label">Doğru Cevap Sayısı</div>
+  <h2 id="scoreDisplay">–</h2>
+  <div class="score-detail" id="scoreDetail"></div>
+  <div id="pointsRow" style="display:none;margin-top:1.2rem;">
+    <div style="font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:#b8a890;margin-bottom:0.3rem;">Okuma Puanı</div>
+    <div id="pointsDisplay" style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:#e8c840;"></div>
+    <div id="pointsDetail" style="font-size:0.82rem;color:#b8a890;margin-top:0.3rem;font-style:italic;"></div>
+  </div>
+  <div class="feedback" id="feedbackMsg"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- BÖLÜM 1 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Okuma Metni — Boşluk Doldurma</div>
+      <div style="color:#b8a890;font-size:0.78rem;margin-top:2px;">Küresel Isınma · Sorular 1–6</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="reading-text">
+      <p>Küresel ısınma, atmosferdeki sera gazlarının artmasıyla dünya genelinde sıcaklıkların yükselmesi durumudur. İnsan faaliyetleri, özellikle fosil yakıt kullanımı ve ormancılık faaliyetlerinin azalması bu <strong>(S1) ?</strong> hızlandırmıştır. Bilim insanları, bu değişimin ekosistemler üzerinde <strong>(S2) ?</strong> sonuçlar doğuracağı konusunda uyarıyorlar. Buzulların erimesi, deniz seviyelerinin yükselmesine ve kıyı bölgelerinin <strong>(S3) ?</strong> kalmasına neden olabilir. Bu durum sadece çevre için değil, insan sağlığı <strong>(S4) ?</strong> da büyük riskler taşımaktadır.</p>
+      <p>Birçok canlı türü, değişen iklim koşullarına <strong>(S5) ?</strong> sağlayamadığı için yok olma tehlikesiyle karşı karşıyadır. Bu sorunla mücadele etmek için <strong>(S6) ?</strong> düzeyde ortak adımlar atılmalı ve sürdürülebilir enerji kaynaklarına geçiş hızlandırılmalıdır. İklim krizinin etkilerini hafifletmek için endüstriyel tesislerin emisyonlarını düşürmesi gerekmektedir.</p>
+    </div>
+
+    <div class="instructions">Her sözcük yalnızca bir defa kullanılabilir. Seçmemeniz gereken <strong>iki</strong> seçenek bulunmaktadır.</div>
+
+    <div class="options-label">Seçenekler</div>
+    <div class="options-grid">
+      <div class="option-pill"><strong>A)</strong> küresel</div>
+      <div class="option-pill"><strong>B)</strong> tehlikeli</div>
+      <div class="option-pill"><strong>C)</strong> sular altında</div>
+      <div class="option-pill"><strong>D)</strong> uyum</div>
+      <div class="option-pill"><strong>E)</strong> açısından</div>
+      <div class="option-pill"><strong>F)</strong> süreci</div>
+      <div class="option-pill"><strong>G)</strong> kentsel</div>
+      <div class="option-pill"><strong>H)</strong> yüzeysel</div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="question" id="qw1">
+      <div class="q-label">Soru 1</div>
+      <div class="q-text">İnsan faaliyetleri bu <span class="blank">______</span> hızlandırmıştır.</div>
+      <select id="q1" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question" id="qw2">
+      <div class="q-label">Soru 2</div>
+      <div class="q-text">Ekosistemler üzerinde <span class="blank">______</span> sonuçlar doğuracağı konusunda uyarıyorlar.</div>
+      <select id="q2" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question" id="qw3">
+      <div class="q-label">Soru 3</div>
+      <div class="q-text">Kıyı bölgelerinin <span class="blank">______</span> kalmasına neden olabilir.</div>
+      <select id="q3" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question" id="qw4">
+      <div class="q-label">Soru 4</div>
+      <div class="q-text">İnsan sağlığı <span class="blank">______</span> da büyük riskler taşımaktadır.</div>
+      <select id="q4" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb4"></div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question" id="qw5">
+      <div class="q-label">Soru 5</div>
+      <div class="q-text">Değişen iklim koşullarına <span class="blank">______</span> sağlayamadığı için yok olma tehlikesiyle karşı karşıyadır.</div>
+      <select id="q5" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb5"></div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question" id="qw6">
+      <div class="q-label">Soru 6</div>
+      <div class="q-text"><span class="blank">______</span> düzeyde ortak adımlar atılmalı ve sürdürülebilir enerji kaynaklarına geçiş hızlandırılmalıdır.</div>
+      <select id="q6" onchange="updateProgress()">
+        <option value="">— Seçiniz —</option>
+        <option value="A">A) küresel</option>
+        <option value="B">B) tehlikeli</option>
+        <option value="C">C) sular altında</option>
+        <option value="D">D) uyum</option>
+        <option value="E">E) açısından</option>
+        <option value="F">F) süreci</option>
+        <option value="G">G) kentsel</option>
+        <option value="H">H) yüzeysel</option>
+      </select>
+      <div class="q-feedback" id="fb6"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- BÖLÜM 2 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Okuma Metni — Eşleştirme</div>
+      <div style="color:#b8a890;font-size:0.78rem;margin-top:2px;">Hizmet ve İlanlar · Sorular 7–14</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="instructions">Aşağıdaki ilanları (S7–S14) ve durumları (A–J) eşleştiriniz. Her seçenek bir kez kullanılır. <strong>İki</strong> seçenek dışarıda kalacaktır.</div>
+
+    <div class="options-label">Durumlar (A–J)</div>
+    <div class="options-grid" style="flex-direction:column;gap:0.3rem;">
+      <div class="option-pill"><strong>A)</strong> Eski aracınızın bakımını yaptırmak için güvenilir bir usta arıyorsunuz.</div>
+      <div class="option-pill"><strong>B)</strong> Yurt dışı tatili için uygun uçak bileti bakıyorsunuz.</div>
+      <div class="option-pill"><strong>C)</strong> Bahçenizdeki ağaçların budanması ve bakımı için yardım almalısınız.</div>
+      <div class="option-pill"><strong>D)</strong> Piyano dersi almak için öğretmen arıyorsunuz.</div>
+      <div class="option-pill"><strong>E)</strong> Sessiz bir ortamda sınav çalışmak için kütüphane üyeliği istiyorsunuz.</div>
+      <div class="option-pill"><strong>F)</strong> Bel ağrılarınız için uzman bir fizyoterapist eşliğinde spor yapmak istiyorsunuz.</div>
+      <div class="option-pill"><strong>G)</strong> Telefonunuzun ekranı kırıldı ve acil tamir edilmesi gerekiyor.</div>
+      <div class="option-pill"><strong>H)</strong> Akşam yemeği için eve hızlı bir pizza siparişi vermek istiyorsunuz.</div>
+      <div class="option-pill"><strong>İ)</strong> İngilizce seviyenizi geliştirmek için kurs arıyorsunuz.</div>
+      <div class="option-pill"><strong>J)</strong> Yeni açacağınız şirket için merkezi bir ofis kiralamak istiyorsunuz.</div>
+    </div>
+
+    <div id="matchingQuestions">
+      <!-- S7 -->
+      <div class="match-row" id="qw7">
+        <div class="match-num">S7</div>
+        <div class="match-text"><strong>Global Dil Akademisi</strong> — İngilizce seviyenizi bir üst basamağa taşımaya hazır mısınız? Uzman eğitmen kadromuzla, her seviyeye uygun konuşma odaklı dersler sunuyoruz.</div>
+        <select id="q7" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb7"></div>
+      </div>
+
+      <!-- S8 -->
+      <div class="match-row" id="qw8">
+        <div class="match-num">S8</div>
+        <div class="match-text"><strong>Plaza İş Merkezi</strong> — Şehrin kalbinde, yeni şirketiniz için prestijli ve modern ofisler! Toplantı odaları, yüksek hızda internet ve sekretarya hizmetiyle işinizi büyütün.</div>
+        <select id="q8" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb8"></div>
+      </div>
+
+      <!-- S9 -->
+      <div class="match-row" id="qw9">
+        <div class="match-num">S9</div>
+        <div class="match-text"><strong>Lezzet Pizza</strong> — Akşam yemeğiniz için en taze ve sıcak pizzalar sadece bir telefon uzağınızda! 30 dakikada kapıya teslim garantisiyle.</div>
+        <select id="q9" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb9"></div>
+      </div>
+
+      <!-- S10 -->
+      <div class="match-row" id="qw10">
+        <div class="match-num">S10</div>
+        <div class="match-text"><strong>Usta Eller Oto Servis</strong> — Eski aracınızın tüm bakım ve onarım işlemleri uzman ekibimiz tarafından titizlikle yapılır. Motor kontrolü, fren bakımı ve güvenilir teknik destek.</div>
+        <select id="q10" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb10"></div>
+      </div>
+
+      <!-- S11 -->
+      <div class="match-row" id="qw11">
+        <div class="match-num">S11</div>
+        <div class="match-text"><strong>Sağlıklı Yaşam Merkezi</strong> — Bel ve sırt ağrılarınızdan uzman desteğiyle kurtulun! Uzman fizyoterapistler eşliğinde size özel egzersiz programları ve tıbbi pilates seansları.</div>
+        <select id="q11" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb11"></div>
+      </div>
+
+      <!-- S12 -->
+      <div class="match-row" id="qw12">
+        <div class="match-num">S12</div>
+        <div class="match-text"><strong>Tekno Destek Servisi</strong> — Akıllı telefonunuzun ekranı mı kırıldı? Sadece bir saat içinde, orijinal yedek parça garantisiyle ekran değişimini gerçekleştiriyoruz.</div>
+        <select id="q12" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb12"></div>
+      </div>
+
+      <!-- S13 -->
+      <div class="match-row" id="qw13">
+        <div class="match-num">S13</div>
+        <div class="match-text"><strong>Nota Müzik Akademisi</strong> — Hayalinizdeki piyano eğitimine uzman öğretmenlerimizle başlayın. Çocuklar ve yetişkinler için birebir özel dersler, esnek ders saatleri.</div>
+        <select id="q13" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb13"></div>
+      </div>
+
+      <!-- S14 -->
+      <div class="match-row" id="qw14">
+        <div class="match-num">S14</div>
+        <div class="match-text"><strong>Fly-Away Turizm</strong> — Yurt dışı tatiliniz için en uygun fiyatlı uçak biletleri burada! Tüm dünya havayollarını tek bir platformda karşılaştırın.</div>
+        <select id="q14" class="match-select" onchange="updateProgress()">
+          <option value="">— Durum —</option>
+          <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+          <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+          <option value="G">G</option><option value="H">H</option><option value="I">İ</option><option value="J">J</option>
+        </select>
+        <div class="q-feedback" id="fb14"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- BÖLÜM 3 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">Okuma Metni — Başlık Eşleştirme</div>
+      <div style="color:#b8a890;font-size:0.78rem;margin-top:2px;">Sürdürülebilir Mimari ve Çevre · Sorular 15–20</div>
+    </div>
+  </div>
+  <div class="section-body">
+    <div class="instructions">Her paragraf için uygun başlığı seçiniz (A–H). Her başlık yalnız bir defa kullanılabilir.</div>
+
+    <div class="options-label">Başlıklar</div>
+    <div class="options-grid" style="flex-direction:column;gap:0.3rem;">
+      <div class="option-pill"><strong>A)</strong> İnşaat Sektöründe Atık Yönetimi ve Geri Dönüşüm</div>
+      <div class="option-pill"><strong>B)</strong> Yeşil Binaların İnsan Sağlığı Üzerindeki Etkileri</div>
+      <div class="option-pill"><strong>C)</strong> Geleneksel Mimari ile Modern Teknolojinin Uyumu</div>
+      <div class="option-pill"><strong>D)</strong> Geleceğin Şehirlerinde Yenilenebilir Enerji Kullanımı</div>
+      <div class="option-pill"><strong>E)</strong> Ekolojik Şehir Tasarımında Su Tasarrufu</div>
+      <div class="option-pill"><strong>F)</strong> Şehir Planlamasında Yenilikçi Ulaşım Çözümleri</div>
+      <div class="option-pill"><strong>G)</strong> Akıllı Binalarda Enerji Verimliliği Stratejileri</div>
+      <div class="option-pill"><strong>H)</strong> Kentsel Tarım ve Dikey Bahçelerin Yükselişi</div>
+    </div>
+
+    <!-- Para 1 -->
+    <div class="match-row" id="qw15">
+      <div class="match-num">I</div>
+      <div class="match-text">Günümüzde modern binalar, sadece barınma ihtiyacını karşılamakla kalmayıp aynı zamanda çevre dostu sistemlerle donatılmaktadır. Bu binaların merkezinde yer alan enerji verimliliği sistemleri, güneş panelleri ve akıllı sensörler sayesinde enerji tüketimini minimuma indirir. Isı yalıtımı ve doğal havalandırma yöntemleri kullanılarak karbon ayak izinin azaltılması hedeflenir. Bu yaklaşım, modern kentlerin iklim değişikliğiyle mücadelesinde en etkili araçlardan biridir. Sürdürülebilir yapılar, gelecekte tüm şehirlerin altyapısını oluşturacak temel bir model olarak kabul edilmektedir.</div>
+      <select id="q15" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb15"></div>
+    </div>
+
+    <!-- Para 2 -->
+    <div class="match-row" id="qw16">
+      <div class="match-num">II</div>
+      <div class="match-text">İnşaat faaliyetleri sırasında ortaya çıkan atıkların yönetimi, çevre kirliliğini önlemek adına kritik bir rol oynar. Modern mimari projelerde, yıkılan eski binaların parçaları ve beton kalıntıları artık çöpe gitmek yerine yeniden işlenerek kullanılmaktadır. Bu geri dönüşüm süreci, doğal kaynakların korunmasına yardımcı olurken inşaat maliyetlerini de düşürmektedir. Geri dönüştürülmüş çelik ve ahşap kullanımı, sadece çevresel fayda sağlamakla kalmaz, aynı zamanda estetik ve dayanıklı yapılar inşa edilmesine de olanak tanır.</div>
+      <select id="q16" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb16"></div>
+    </div>
+
+    <!-- Para 3 -->
+    <div class="match-row" id="qw17">
+      <div class="match-num">III</div>
+      <div class="match-text">Modern kentlerde beton yığınları arasında nefes alacak alanlar yaratmak için dikey bahçecilik ve çatıda tarım uygulamaları giderek yaygınlaşıyor. Bu sistemler, binaların cephelerini canlı bitkilerle kaplayarak hem hava kirliliğini azaltıyor hem de ısı yalıtımı sağlıyor. Şehir sakinleri, bu yeşil alanlar sayesinde kendi sebzelerini yetiştirme imkânı bularak gıda üretimine katkıda bulunuyorlar. Ayrıca bu bitki örtüsü, kentsel ısı adası etkisini azaltarak yaz aylarında şehirlerin daha serin kalmasına yardımcı oluyor ve biyolojik çeşitliliği destekliyor.</div>
+      <select id="q17" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb17"></div>
+    </div>
+
+    <!-- Para 4 -->
+    <div class="match-row" id="qw18">
+      <div class="match-num">IV</div>
+      <div class="match-text">Ekolojik şehir tasarımında su kaynaklarının yönetimi, sürdürülebilirliğin en kritik unsurlarından biridir. Modern projeler, yağmur suyunu özel depolarda toplayan ve arıtarak bahçe sulamasında veya bina içi tesisatlarda tekrar kullanan akıllı sistemleri içermektedir. Bu sayede, kentsel alanlarda su israfı büyük oranda önlenirken temiz su kaynakları da korunmaktadır. Ayrıca, geçirgen yüzeyler ve özel zemin tasarımları sayesinde yeraltı sularının doğal yollarla beslenmesi desteklenir. Su tasarrufu sağlayan bu yenilikçi teknolojiler, özellikle kuraklıkla mücadele eden büyük metropoller için hayati bir çözüm sunmaktadır.</div>
+      <select id="q18" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb18"></div>
+    </div>
+
+    <!-- Para 5 -->
+    <div class="match-row" id="qw19">
+      <div class="match-num">V</div>
+      <div class="match-text">Geleceğin şehirlerinde enerji ihtiyacı, çevreye zarar veren fosil yakıtlar yerine tamamen yenilenebilir kaynaklardan karşılanacaktır. Rüzgâr türbinleri ve güneş panelleri artık sadece uzak alanlarda değil, binaların cephelerine entegre edilerek şehir merkezlerinde de aktif olarak kullanılmaktadır. Bu yerinde enerji üretimi yaklaşımı, elektrik iletimindeki kayıpları azaltırken şehirlerin enerji bağımsızlığını da artırmaktadır. Ayrıca, biyokütle enerjisi ve jeotermal kaynakların kentsel altyapıya dahil edilmesiyle, karbon salınımı sıfıra indirilmiş yerleşim alanları oluşturulmaktadır. Temiz enerji kullanımı, sürdürülebilir mimarinin vazgeçilmez bir parçasıdır.</div>
+      <select id="q19" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb19"></div>
+    </div>
+
+    <!-- Para 6 -->
+    <div class="match-row" id="qw20">
+      <div class="match-num">VI</div>
+      <div class="match-text">Şehir planlamasında yaşanan teknolojik dönüşüm, sadece binaları değil ulaşım ağlarını da kökten yeniden şekillendirmektedir. Yenilikçi ulaşım çözümleri, trafiği azaltmak ve emisyon değerlerini düşürmek amacıyla toplu taşımayı otonom ve elektrikli araçlarla entegre etmektedir. Akıllı şehirlerin planlama süreçlerinde, bisiklet yolları ve yaya dostu alanlar öncelikli hale gelerek bireysel araç bağımlılığı minimize edilmektedir. Dijital platformlar üzerinden yönetilen trafik akışı, enerji tasarrufu sağlarken vatandaşların ulaşım sürelerini de önemli ölçüde kısaltmaktadır. Bu modern yaklaşımlar, şehirlerdeki yaşam kalitesini artırarak daha temiz bir çevre sunmaktadır.</div>
+      <select id="q20" class="match-select" onchange="updateProgress()">
+        <option value="">— Başlık —</option>
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option>
+        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
+        <option value="G">G</option><option value="H">H</option>
+      </select>
+      <div class="q-feedback" id="fb20"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- BÖLÜM 4 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">Okuma Metni — Çoktan Seçmeli & Doğru/Yanlış</div>
+      <div style="color:#b8a890;font-size:0.78rem;margin-top:2px;">Elektrikli Araçların Tarihsel Gelişimi · Sorular 21–29</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="reading-text">
+      <p>Elektrikli araçların hikâyesi, sanılanın aksine günümüzün bir icadı değil, 19. yüzyılın başlarına kadar uzanan köklü bir geçmişin ürünüdür. İlk prototiplerin üretildiği 1830'lu yıllarda, bu araçlar sessiz çalışma prensipleri ve duman çıkarmamaları sayesinde büyük bir popülerlik kazanmıştı. Henüz içten yanmalı motorların gürültülü ve sarsıntılı dünyası tam anlamıyla kurulmamışken, elektrikli motorlar şehir içi ulaşımda zarafetin ve konforun simgesi olarak görülüyordu. Amerika'da ve Avrupa'nın büyük başkentlerinde ilk taksi filoları elektrikli araçlardan oluşuyor, halk bu sessiz devrime hayranlıkla tanıklık ediyordu.</p>
+      <p>Ancak 20. yüzyılın başlarında rüzgâr tersine dönmeye başladı. Fosil yakıtların bollaşması ve Henry Ford'un seri üretim bandıyla tanıttığı içten yanmalı motorlar, ulaşımın kaderini değiştirdi. Petrol türevi yakıtların ucuzlaması ve araçların menzil kapasitelerinin artmasıyla elektrikli araçlar sessizliğe gömüldü. Onlarca yıl sürecek olan bu durgunluk dönemi, aslında otomotiv endüstrisinin petrole olan mutlak bağımlılığının da başlangıcıydı. Elektrikli motorlar sadece süt kamyonetlerinde veya golf arabalarında kendine yer bulabilir hale gelmiş, geniş kitlelerin hafızasından silinmeye yüz tutmuştu.</p>
+      <p>Zaman içinde çevre kirliliğinin artması ve küresel ısınmanın yarattığı tehditler, insanlığı bir kez daha geçmişin bu temiz teknolojisine yönlendirdi. Özellikle 1970'li yıllardaki petrol krizleri, alternatif enerji arayışlarını tetikledi. Ancak asıl büyük sıçrama, 21. yüzyılın başında batarya teknolojilerinde yaşanan devrimle gerçekleşti. Lityum-iyon pillerin kapasitelerindeki artış ve maliyetlerdeki düşüş, elektrikli araçların yeniden "kendi dünyasını kurmasına" olanak sağladı. Artık bu araçlar sadece çevreci bir tercih değil, aynı zamanda yüksek performans ve dijital teknolojinin zirvesi olarak nitelendiriliyor.</p>
+      <p>Günümüzde dünya genelinde uygulanan emisyon kısıtlamaları ve devletlerin sürdürülebilir enerji politikaları, elektrikli ulaşımı bir zorunluluk haline getirmiştir. Birçok ülke, önümüzdeki on yıllar içinde fosil yakıtlı araçların satışını tamamen yasaklamayı planlamaktadır. Bu dönüşüm süreci, sadece otomobil üreticilerini değil, aynı zamanda enerji altyapısını ve şehir planlamasını da kökten değiştirmektedir. Şarj istasyonları artık benzin istasyonlarının yerini almaya başlamış, ulaşımın evrensel dili "elektrik" olmuştur. Geçmişin sessiz prototipleri, bugün geleceğin en gürültülü teknolojik devrimine dönüşmüş durumdadır.</p>
+    </div>
+
+    <!-- Q21 -->
+    <div class="question" id="qw21">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 21 — Metnin bütününe göre hangi yargıya varılabilir?</div>
+      <div class="choices" id="choices21">
+        <label class="choice-label" onclick="selectChoice(this,'q21','A')"><input type="radio" name="q21" value="A"><span class="choice-key">A</span><span>Elektrikli araçlar 21. yüzyılda sıfırdan keşfedilmiş bir teknolojidir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q21','B')"><input type="radio" name="q21" value="B"><span class="choice-key">B</span><span>İçten yanmalı motorlar, her zaman elektrikli araçlardan daha popüler olmuştur.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q21','C')"><input type="radio" name="q21" value="C"><span class="choice-key">C</span><span>Çevresel zorunluluklar ve teknolojik gelişmeler elektrikli araçları yeniden canlandırmıştır.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q21','D')"><input type="radio" name="q21" value="D"><span class="choice-key">D</span><span>Elektrikli araçların menzil sorunu 19. yüzyılda tamamen çözülmüştür.</span></label>
+      </div>
+      <div class="q-feedback" id="fb21"></div>
+    </div>
+
+    <!-- Q22 -->
+    <div class="question" id="qw22">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 22 — "Sessizliğe gömülmek" sözüyle ne anlatılmaktadır?</div>
+      <div class="choices" id="choices22">
+        <label class="choice-label" onclick="selectChoice(this,'q22','A')"><input type="radio" name="q22" value="A"><span class="choice-key">A</span><span>Araçların motor sesinin tamamen kesilmesi</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q22','B')"><input type="radio" name="q22" value="B"><span class="choice-key">B</span><span>Teknolojinin üretiminin ve kullanımının durma noktasına gelmesi</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q22','C')"><input type="radio" name="q22" value="C"><span class="choice-key">C</span><span>Araçların gizli bir projeye dönüştürülmesi</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q22','D')"><input type="radio" name="q22" value="D"><span class="choice-key">D</span><span>Sadece kütüphane gibi sessiz alanlarda kullanılması</span></label>
+      </div>
+      <div class="q-feedback" id="fb22"></div>
+    </div>
+
+    <!-- Q23 -->
+    <div class="question" id="qw23">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 23 — Hangi seçenek tarihsel dönemler ve özelliklerle uyumsuzdur?</div>
+      <div class="choices" id="choices23">
+        <label class="choice-label" onclick="selectChoice(this,'q23','A')"><input type="radio" name="q23" value="A"><span class="choice-key">A</span><span>1830'lar: Şehir içi ulaşımda konfor ve sessizliğin simgesi olması</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q23','B')"><input type="radio" name="q23" value="B"><span class="choice-key">B</span><span>20. Yüzyıl Başı: Petrolün bollaşmasıyla geri plana itilmesi</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q23','C')"><input type="radio" name="q23" value="C"><span class="choice-key">C</span><span>1970'ler: Petrol kriziyle birlikte ilginin tamamen yok olması</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q23','D')"><input type="radio" name="q23" value="D"><span class="choice-key">D</span><span>21. Yüzyıl: Batarya devrimiyle performans odaklı bir kimlik kazanması</span></label>
+      </div>
+      <div class="q-feedback" id="fb23"></div>
+    </div>
+
+    <!-- Q24 -->
+    <div class="question" id="qw24">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 24 — Günümüzdeki dönüşüm hakkında hangisi doğrudur?</div>
+      <div class="choices" id="choices24">
+        <label class="choice-label" onclick="selectChoice(this,'q24','A')"><input type="radio" name="q24" value="A"><span class="choice-key">A</span><span>Sadece otomobil üreticilerini ilgilendiren bir süreçtir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q24','B')"><input type="radio" name="q24" value="B"><span class="choice-key">B</span><span>Şehir planlaması ve enerji altyapısında köklü değişiklikler gerektirmektedir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q24','C')"><input type="radio" name="q24" value="C"><span class="choice-key">C</span><span>Fosil yakıtlı araçların kullanımı tüm dünyada aynı anda yasaklanmıştır.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q24','D')"><input type="radio" name="q24" value="D"><span class="choice-key">D</span><span>Elektrikli araçlar halen sadece süt kamyoneti gibi kısıtlı alanlarda kullanılmaktadır.</span></label>
+      </div>
+      <div class="q-feedback" id="fb24"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px dashed var(--border);margin:1.2rem 0;">
+    <div class="instructions" style="margin-bottom:1rem;">Aşağıdaki cümleler metne göre <strong>DOĞRU (A)</strong>, <strong>YANLIŞ (B)</strong> ya da <strong>VERİLMEMİŞ (C)</strong> olabilir.</div>
+
+    <!-- Q25 -->
+    <div class="question" id="qw25">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 25</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">İlk elektrikli araçlar, gürültülü olmaları nedeniyle 19. yüzyılda tercih edilmemiştir.</div>
+      <div class="choices" id="choices25">
+        <label class="choice-label" onclick="selectChoice(this,'q25','A')"><input type="radio" name="q25" value="A"><span class="choice-key">A</span><span>Doğru</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q25','B')"><input type="radio" name="q25" value="B"><span class="choice-key">B</span><span>Yanlış</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q25','C')"><input type="radio" name="q25" value="C"><span class="choice-key">C</span><span>Verilmemiş</span></label>
+      </div>
+      <div class="q-feedback" id="fb25"></div>
+    </div>
+
+    <!-- Q26 -->
+    <div class="question" id="qw26">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 26</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">Henry Ford'un seri üretim yöntemleri, elektrikli araçların piyasadaki gücünü kaybetmesinde etkili olmuştur.</div>
+      <div class="choices" id="choices26">
+        <label class="choice-label" onclick="selectChoice(this,'q26','A')"><input type="radio" name="q26" value="A"><span class="choice-key">A</span><span>Doğru</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q26','B')"><input type="radio" name="q26" value="B"><span class="choice-key">B</span><span>Yanlış</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q26','C')"><input type="radio" name="q26" value="C"><span class="choice-key">C</span><span>Verilmemiş</span></label>
+      </div>
+      <div class="q-feedback" id="fb26"></div>
+    </div>
+
+    <!-- Q27 -->
+    <div class="question" id="qw27">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 27</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">Elektrikli araçların bakım maliyetleri, içten yanmalı araçlara göre %50 daha düşüktür.</div>
+      <div class="choices" id="choices27">
+        <label class="choice-label" onclick="selectChoice(this,'q27','A')"><input type="radio" name="q27" value="A"><span class="choice-key">A</span><span>Doğru</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q27','B')"><input type="radio" name="q27" value="B"><span class="choice-key">B</span><span>Yanlış</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q27','C')"><input type="radio" name="q27" value="C"><span class="choice-key">C</span><span>Verilmemiş</span></label>
+      </div>
+      <div class="q-feedback" id="fb27"></div>
+    </div>
+
+    <!-- Q28 -->
+    <div class="question" id="qw28">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 28</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">21. yüzyıldaki asıl teknolojik sıçrama, batarya kapasitelerindeki gelişimle sağlanmıştır.</div>
+      <div class="choices" id="choices28">
+        <label class="choice-label" onclick="selectChoice(this,'q28','A')"><input type="radio" name="q28" value="A"><span class="choice-key">A</span><span>Doğru</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q28','B')"><input type="radio" name="q28" value="B"><span class="choice-key">B</span><span>Yanlış</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q28','C')"><input type="radio" name="q28" value="C"><span class="choice-key">C</span><span>Verilmemiş</span></label>
+      </div>
+      <div class="q-feedback" id="fb28"></div>
+    </div>
+
+    <!-- Q29 -->
+    <div class="question" id="qw29">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 29</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">19. yüzyıldaki ilk elektrikli araçların menzili, günümüzdeki modern araçlarla aynı seviyededir.</div>
+      <div class="choices" id="choices29">
+        <label class="choice-label" onclick="selectChoice(this,'q29','A')"><input type="radio" name="q29" value="A"><span class="choice-key">A</span><span>Doğru</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q29','B')"><input type="radio" name="q29" value="B"><span class="choice-key">B</span><span>Yanlış</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q29','C')"><input type="radio" name="q29" value="C"><span class="choice-key">C</span><span>Verilmemiş</span></label>
+      </div>
+      <div class="q-feedback" id="fb29"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- BÖLÜM 5 -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="section-card">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">Okuma Metni — Çoktan Seçmeli & Paragraf Bulma</div>
+      <div style="color:#b8a890;font-size:0.78rem;margin-top:2px;">Yapay Zekâ İş Dünyasını Değiştiriyor mu? · Sorular 30–35</div>
+    </div>
+  </div>
+  <div class="section-body">
+
+    <div class="reading-text">
+      <p><strong>A)</strong> Yapay zekâ teknolojilerinin iş dünyasına entegrasyonu, son on yılda endüstriyel devrimden bu yana görülen en büyük dönüşümlerden birini tetikledi. İlk başlarda bu teknolojiye karşı ciddi bir direnç ve korku olsa da, günümüzde birçok sektör yapay zekâyı verimliliği artıran temel bir araç olarak kabul etmeye başladı. Bazı uzmanlar, otomasyonun rutin işleri devralarak milyonlarca mesleği yok edeceğini ve kitlesel işsizliğe yol açacağını savunurken; teknoloji iyimserleri bu sürecin, henüz adı konmamış yepyeni iş sahaları yaratacağını öngörüyor. Özellikle veri mimarlığı ve yapay zekâ eğitmenliği gibi alanlar, bu yeni ekosistemin öncüleri olarak görülüyor. Geleneksel çalışma modelleri, bu teknolojik dalga karşısında hızla evrim geçirmektedir.</p>
+      <p><strong>B)</strong> Dünya Ekonomik Forumu verilerine göre, otomasyonun üretim ve lojistik sektörlerindeki payı son on yılda %40 oranında bir artış göstermiştir. Şirketler, veri analitiği algoritmaları sayesinde müşteri tercihlerini ve pazar trendlerini daha önce hiç olmadığı kadar hassas bir doğrulukla tahmin edebiliyorlar. 2015-2020 yılları arasında bu teknolojilere yapılan yatırımların geri dönüş hızı dünya genelinde ciddi bir yükseliş kaydetti. Ancak bu hızlı yükseliş, her şirketin aynı başarıyı yakalayacağı anlamına gelmiyor. Teknolojik altyapısını güncellemeyen firmalar, dijitalleşen küresel pazarda rekabet gücünü kaybetme riskiyle karşı karşıya kalmaktadır. Verimlilik artışı sürerken, büyümenin hızı teknolojik adaptasyon yeteneğine bağlıdır.</p>
+      <p><strong>C)</strong> Ofis ortamlarının ve fiziksel iş yerlerinin gelecekte tamamen ortadan kalkması beklenmese de, bu mekanların tıpkı sanat galerileri veya el dokumacılığı atölyeleri gibi prestij ve estetik odaklı alanlara dönüşmesi tahmin ediliyor. Gelecekte iş yerleri, sadece iş yapmak için değil, sosyal etkileşim ve yaratıcı beyin fırtınası seansları için kullanılan özel merkezler haline gelecek. Uzmanlar, önümüzdeki 50 yıl içinde geleneksel mesai kavramının yerini tümüyle esnek ve proje bazlı çalışma biçimlerine bırakacağına inanıyor.</p>
+      <p><strong>D)</strong> Yapay zekâ sistemleri ne kadar gelişirse gelişsin, insan beyninin yaratıcılık ve duygusal zekâ gibi derin yeteneklerinin yerini doldurmakta zorlanmaktadır. Araştırmalar, algoritmaların teknik verileri işlemede üstün olduğunu ancak karmaşık sosyal problemleri çözmede yetersiz kaldığını göstermektedir. Dijital araçlar üzerinden yürütülen iş süreçlerinde, insanların dikkatlerinin çabucak dağıldığı ve derinlemesine analiz yapma yetilerinin zayıfladığı tespit edilmiştir. Bu nedenle, teknik becerilerin yanı sıra "yumuşak beceriler" (soft skills) olarak adlandırılan insani yeteneklerin işe alım süreçlerindeki önemi her geçen gün artmaktadır.</p>
+      <p><strong>E)</strong> Eğitim sistemleri, gençleri bu yeni dijital gerçekliğe hazırlamak için köklü bir değişim sürecine girmiştir. Gelişmiş ülkelerde kodlama ve veri okuryazarlığı dersleri ilköğretim seviyesine kadar inerken, gelişmekte olan ülkelerde bu cihazlar bilginin demokratikleşmesini sağlamaktadır. Hükümetler, yapay zekâ nedeniyle işini kaybetme riski taşıyan çalışanlar için yeniden vasıflandırma programlarına büyük bütçeler ayırmaktadır. Hem teknolojik gelişimin desteklenmesi hem de çalışanların sosyal haklarının korunması, modern toplumların sürdürülebilirliği açısından hayati bir önem taşımaktadır.</p>
+    </div>
+
+    <!-- Q30 -->
+    <div class="question" id="qw30">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 30 — Metinden çıkarılamayan cümle hangisidir?</div>
+      <div class="choices" id="choices30">
+        <label class="choice-label" onclick="selectChoice(this,'q30','A')"><input type="radio" name="q30" value="A"><span class="choice-key">A</span><span>Otomasyonun üretimdeki payı son on yılda belirgin şekilde artmıştır.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q30','B')"><input type="radio" name="q30" value="B"><span class="choice-key">B</span><span>Yapay zekâ, gelecekte tüm meslekleri istisnasız olarak yok edecektir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q30','C')"><input type="radio" name="q30" value="C"><span class="choice-key">C</span><span>Şirketler veri analitiği ile müşteri tercihlerini daha iyi tahmin edebilmektedir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q30','D')"><input type="radio" name="q30" value="D"><span class="choice-key">D</span><span>Teknolojiye uyum sağlamayan firmalar rekabet dışı kalma riski taşır.</span></label>
+      </div>
+      <div class="q-feedback" id="fb30"></div>
+    </div>
+
+    <!-- Q31 -->
+    <div class="question" id="qw31">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 31 — Hangi konuya metinde değinilmemiştir?</div>
+      <div class="choices" id="choices31">
+        <label class="choice-label" onclick="selectChoice(this,'q31','A')"><input type="radio" name="q31" value="A"><span class="choice-key">A</span><span>Yapay zekânın yaratıcılık gerektiren işlerde insandan daha başarılı olduğuna.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q31','B')"><input type="radio" name="q31" value="B"><span class="choice-key">B</span><span>İş yerlerinin gelecekte daha sosyal ve estetik mekanlara dönüşebileceğine.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q31','C')"><input type="radio" name="q31" value="C"><span class="choice-key">C</span><span>Eğitim sistemlerinin dijital becerilere göre yeniden şekillendiğine.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q31','D')"><input type="radio" name="q31" value="D"><span class="choice-key">D</span><span>Yeni teknolojilerin veri mimarlığı gibi yeni iş alanları doğurduğuna.</span></label>
+      </div>
+      <div class="q-feedback" id="fb31"></div>
+    </div>
+
+    <!-- Q32 -->
+    <div class="question" id="qw32">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 32 — Hangi yargıya ulaşılamaz?</div>
+      <div class="choices" id="choices32">
+        <label class="choice-label" onclick="selectChoice(this,'q32','A')"><input type="radio" name="q32" value="A"><span class="choice-key">A</span><span>Dijital araçlar insanların derinlemesine odaklanma yeteneğini olumsuz etkileyebilir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q32','B')"><input type="radio" name="q32" value="B"><span class="choice-key">B</span><span>Gelişmekte olan ülkelerde dijital araçlar bilgiye erişimi kolaylaştırmıştır.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q32','C')"><input type="radio" name="q32" value="C"><span class="choice-key">C</span><span>Yapay zekâ kullanımı sayesinde şirketlerin maliyetleri her sektörde sıfıra inmiştir.</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q32','D')"><input type="radio" name="q32" value="D"><span class="choice-key">D</span><span>İnsani duygular ve sosyal problem çözme yeteneği iş dünyasında önemini korumaktadır.</span></label>
+      </div>
+      <div class="q-feedback" id="fb32"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px dashed var(--border);margin:1.2rem 0;">
+    <div class="instructions" style="margin-bottom:1rem;">Aşağıdaki bilgilerin hangi paragrafta (A–E) yer aldığını bulunuz. Seçilmemesi gereken <strong>iki</strong> paragraf bulunmaktadır.</div>
+
+    <!-- Q33 -->
+    <div class="question" id="qw33">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 33</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">Yapay zekânın insani duygusal zekâ ve yaratıcılık karşısındaki yetersizliği hangi paragrafta yer almaktadır?</div>
+      <div class="choices" id="choices33">
+        <label class="choice-label" onclick="selectChoice(this,'q33','A')"><input type="radio" name="q33" value="A"><span class="choice-key">A</span><span>Paragraf A</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q33','B')"><input type="radio" name="q33" value="B"><span class="choice-key">B</span><span>Paragraf B</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q33','C')"><input type="radio" name="q33" value="C"><span class="choice-key">C</span><span>Paragraf C</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q33','D')"><input type="radio" name="q33" value="D"><span class="choice-key">D</span><span>Paragraf D</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q33','E')"><input type="radio" name="q33" value="E"><span class="choice-key">E</span><span>Paragraf E</span></label>
+      </div>
+      <div class="q-feedback" id="fb33"></div>
+    </div>
+
+    <!-- Q34 -->
+    <div class="question" id="qw34">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 34</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">Fiziksel ofislerin gelecekteki statüsü ve bürüneceği yeni kimlik hangi paragrafta yer almaktadır?</div>
+      <div class="choices" id="choices34">
+        <label class="choice-label" onclick="selectChoice(this,'q34','A')"><input type="radio" name="q34" value="A"><span class="choice-key">A</span><span>Paragraf A</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q34','B')"><input type="radio" name="q34" value="B"><span class="choice-key">B</span><span>Paragraf B</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q34','C')"><input type="radio" name="q34" value="C"><span class="choice-key">C</span><span>Paragraf C</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q34','D')"><input type="radio" name="q34" value="D"><span class="choice-key">D</span><span>Paragraf D</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q34','E')"><input type="radio" name="q34" value="E"><span class="choice-key">E</span><span>Paragraf E</span></label>
+      </div>
+      <div class="q-feedback" id="fb34"></div>
+    </div>
+
+    <!-- Q35 -->
+    <div class="question" id="qw35">
+      <div class="q-label" style="color:var(--ink);font-size:0.85rem;font-weight:700;">Soru 35</div>
+      <div class="q-text" style="font-weight:700;color:var(--ink);">Otomasyonun sektördeki artış oranları ve yatırımların geri dönüş verileri hangi paragrafta yer almaktadır?</div>
+      <div class="choices" id="choices35">
+        <label class="choice-label" onclick="selectChoice(this,'q35','A')"><input type="radio" name="q35" value="A"><span class="choice-key">A</span><span>Paragraf A</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q35','B')"><input type="radio" name="q35" value="B"><span class="choice-key">B</span><span>Paragraf B</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q35','C')"><input type="radio" name="q35" value="C"><span class="choice-key">C</span><span>Paragraf C</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q35','D')"><input type="radio" name="q35" value="D"><span class="choice-key">D</span><span>Paragraf D</span></label>
+        <label class="choice-label" onclick="selectChoice(this,'q35','E')"><input type="radio" name="q35" value="E"><span class="choice-key">E</span><span>Paragraf E</span></label>
+      </div>
+      <div class="q-feedback" id="fb35"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SUBMIT -->
+<div class="submit-wrap">
+  <button class="btn-submit" id="btnFinish" onclick="submitTest()">Testi Bitir</button>
+  <button class="btn-reset" onclick="resetTest()">Sıfırla</button>
+</div>
+
+</main>
+
+<script>
+// ── OTURUM KONTROLÜ ─────────────────────────────────────────
+if (!sessionStorage.getItem('hamzaUser')) {
+  window.location.href = 'index.html';
+}
+
+// ── ANSWER KEY ──────────────────────────────────────────────
+const answers = {
+  q1:'F', q2:'B', q3:'C', q4:'E', q5:'D', q6:'A',
+  q7:'I', q8:'J', q9:'H', q10:'A', q11:'F', q12:'G', q13:'D', q14:'B',
+  q15:'G', q16:'A', q17:'H', q18:'E', q19:'D', q20:'F',
+  q21:'C', q22:'B', q23:'C', q24:'B',
+  q25:'B', q26:'A', q27:'C', q28:'A', q29:'C',
+  q30:'B', q31:'A', q32:'C',
+  q33:'D', q34:'C', q35:'B'
+};
+
+const totalQ = 35;
+const userAnswers = {};
+
+// ── RADIO SELECT ──────────────────────────────────────────────
+function selectChoice(label, name, val) {
+  const group = label.closest('.choices');
+  group.querySelectorAll('.choice-label').forEach(l => l.classList.remove('selected'));
+  label.classList.add('selected');
+  userAnswers[name] = val;
+  updateProgress();
+}
+
+// ── BUILD SEGMENTS ────────────────────────────────────────────
+function buildSegments() {
+  const bar = document.getElementById('segmentsBar');
+  bar.innerHTML = '';
+  for (let i = 0; i < totalQ; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    seg.id = 'seg' + i;
+    bar.appendChild(seg);
+  }
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────
+function updateProgress() {
+  let filled = 0;
+  Object.keys(answers).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) {
+      if (el.tagName === 'SELECT' && el.value !== '') filled++;
+    } else if (userAnswers[k]) {
+      filled++;
+    }
+  });
+  document.getElementById('progressText').textContent = filled + ' / ' + totalQ;
+}
+
+// ── FILL SEGMENTS AFTER SUBMIT ────────────────────────────────
+function fillSegments(correctCount) {
+  for (let i = 0; i < totalQ; i++) {
+    const seg = document.getElementById('seg' + i);
+    if (seg) seg.classList.toggle('filled', i < correctCount);
+  }
+  document.getElementById('progressText').textContent = correctCount + ' / ' + totalQ + ' doğru';
+}
+
+// ── SCORE TABLE (O'qish / Reading — from image) ───────────────
+const scoreTable = {
+  1:20, 2:24, 3:27, 4:29, 5:32, 6:34, 7:36, 8:38, 9:39, 10:41,
+  11:42, 12:44, 13:45, 14:46, 15:48, 16:49, 17:51, 18:52, 19:54,
+  20:55, 21:57, 22:58, 23:60, 24:61, 25:63, 26:65, 27:66, 28:68,
+  29:70, 30:71, 31:73, 32:74, 33:75, 34:75, 35:75
+};
+
+// ── SUBMIT ────────────────────────────────────────────────────
+function submitTest() {
+  let correct = 0;
+
+  Object.keys(answers).forEach(k => {
+    const correct_ans = answers[k];
+    let user_ans = '';
+
+    const el = document.getElementById(k);
+    if (el && el.tagName === 'SELECT') {
+      user_ans = el.value;
+    } else {
+      user_ans = userAnswers[k] || '';
+    }
+
+    const fb = document.getElementById('fb' + k.replace('q',''));
+    const isCorrect = user_ans === correct_ans;
+
+    if (isCorrect) {
+      correct++;
+      if (fb) { fb.className='q-feedback correct'; fb.textContent='✓ Doğru'; }
+    } else {
+      if (fb) {
+        fb.className='q-feedback wrong';
+        fb.textContent = user_ans ? `✗ Yanlış — Doğru cevap: ${correct_ans}` : `✗ Boş bırakıldı — Doğru cevap: ${correct_ans}`;
+      }
+    }
+
+    if (el && el.tagName === 'SELECT') {
+      el.className = 'match-select ' + (isCorrect ? 'correct' : 'wrong');
+    }
+
+    const choicesDiv = document.getElementById('choices' + k.replace('q',''));
+    if (choicesDiv) {
+      choicesDiv.querySelectorAll('.choice-label').forEach(lbl => {
+        const v = lbl.querySelector('input').value;
+        lbl.classList.remove('selected','correct','wrong','show-answer');
+        if (v === user_ans && !isCorrect) lbl.classList.add('wrong');
+        if (v === correct_ans) lbl.classList.add(isCorrect ? 'correct' : 'show-answer');
+      });
+    }
+  });
+
+  const pts = correct > 0 ? (scoreTable[correct] || 0) : 0;
+
+  document.getElementById('scoreDisplay').textContent = correct + ' / ' + totalQ;
+  document.getElementById('scoreDetail').textContent = '35 sorudan ' + correct + ' doğru cevap';
+
+  document.getElementById('pointsDisplay').textContent = pts + ' puan';
+  document.getElementById('pointsDetail').textContent = correct + ' doğru → O\'qish cetveli: ' + pts + ' puan';
+  document.getElementById('pointsRow').style.display = 'block';
+
+  let msg = '';
+  if (pts >= 70) msg = '🏆 Mükemmel! Çok iyi bir sonuç elde ettiniz.';
+  else if (pts >= 55) msg = '👍 İyi iş çıkardınız! Biraz daha çalışmayla mükemmel olacaksınız.';
+  else if (pts >= 41) msg = '📚 Orta seviye. Hatalı soruları gözden geçirmenizi öneririz.';
+  else msg = '💪 Daha fazla pratik yapmanız gerekiyor. Pes etmeyin!';
+
+  document.getElementById('feedbackMsg').textContent = msg;
+
+  fillSegments(correct);
+
+  const resultsEl = document.getElementById('results');
+  resultsEl.style.display = 'block';
+  resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── RESET ─────────────────────────────────────────────────────
+function resetTest() {
+  location.reload();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+buildSegments();
+</script>
+
+</body>
+</html>
