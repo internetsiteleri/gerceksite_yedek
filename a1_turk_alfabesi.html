@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Hamza Hoca ile Türk Alfabesi | 29 Renkli Kart</title>
+<!-- Google Fonts (kartlardaki şık fontlar için) -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* === HADER (şablon) ORİJİNAL STİLLER - Arka plan değiştirildi === */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Arka plan krem fildişi rengine çevrildi */
+    background: #FDF8F0;
+    min-height: 100vh;
+    color: #2c2418;
+    overflow-x: hidden;
+  }
+
+  .home-btn-wrap {
+    padding: 18px 20px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #e8ddce;
+    border: 2px solid #c9a03d;
+    border-radius: 40px;
+    padding: 9px 20px;
+    color: #8b691b;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background .22s, transform .18s, box-shadow .22s;
+  }
+
+  .home-btn:hover {
+    background: #d6c8b6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    color: #7a5c1a;
+    text-decoration: none;
+  }
+
+  .home-btn svg { flex-shrink: 0; }
+
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1.2rem;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #c9a03d, #b8860b);
+    color: #2c2418;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 0.3rem 1.2rem;
+    border-radius: 50px;
+    margin-bottom: 0.9rem;
+  }
+
+  header h1 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: clamp(1.4rem, 4.5vw, 2.5rem);
+    font-weight: 800;
+    color: #9b7b3a;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .header-line {
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9a03d, transparent);
+    margin: 0 auto 10px;
+  }
+
+  .stars {
+    font-size: 1rem;
+    color: #c9a03d;
+    letter-spacing: .4em;
+    margin-bottom: 6px;
+    opacity: .7;
+  }
+
+  .subtitle {
+    font-size: 0.78rem;
+    color: #9b8a6f;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .telegram-section {
+    text-align: center;
+    padding: 0.5rem 1rem 1rem;
+  }
+
+  .tg-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(232, 221, 206, 0.85);
+    border: 1.5px solid rgba(34,158,217,0.3);
+    border-radius: 60px;
+    padding: .75rem 1.5rem .75rem 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tg-logo-wrap { width: 44px; height: 44px; flex-shrink: 0; }
+
+  .tg-btn {
+    display: inline-flex;
+    align-items: center; gap: .45rem;
+    background: linear-gradient(135deg, #229ED9, #1A7FB0);
+    color: #fff; text-decoration: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 800; font-size: .92rem;
+    padding: .65rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(34,158,217,.4);
+    transition: all .22s; white-space: nowrap;
+  }
+
+  .tg-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(34,158,217,.55);
+  }
+
+  .section-title {
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: .85rem; color: #9b7b3a;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin: .5rem 0 1rem; opacity: .85;
+  }
+
+  footer {
+    text-align: center;
+    padding: 0 1rem 2.5rem;
+    font-size: 0.8rem;
+    color: #b29b6e;
+  }
+  footer span { color: #9b7b3a; }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(.95) translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* === ALFABE KARTLARI STİLLERİ (deepseek_html'den adapte) === */
+  .cards-section {
+    max-width: 1400px;
+    margin: 20px auto 40px;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .card {
+    border-radius: 32px;
+    padding: 24px 20px 20px;
+    backdrop-filter: blur(2px);
+    transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s;
+    box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 28px 38px -12px rgba(0, 0, 0, 0.3);
+    border-color: rgba(160, 120, 40, 0.35);
+  }
+
+  /* kart renkleri - kelime metinleri için açık renkler */
+  .c0 { background: linear-gradient(145deg, #0f172f, #020617); border-left: 6px solid #3b82f6; }
+  .c0 .lu { color: #7ab7ff; text-shadow: 0 0 6px rgba(59,130,246,0.4); }
+  .c0 .ll { color: #a5c9ff; }
+  .c0 .sb { border-color: #3b82f6; color: #3b82f6; background: rgba(59,130,246,0.1); }
+  .c0 .sb:hover { background: #3b82f6; color: white; border-color: #3b82f6; }
+  .c0 .div { background: #1e3a8a; }
+  .c0 .word-row { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.3); }
+  .c0 .word-row:hover { background: rgba(59,130,246,0.25); border-color: #3b82f6; }
+  .c0 .wt { color: #e0e7ff; }
+
+  .c1 { background: linear-gradient(145deg, #1f0a38, #0a0318); border-left: 6px solid #c084fc; }
+  .c1 .lu { color: #d9b4ff; text-shadow: 0 0 6px rgba(168,85,247,0.5); }
+  .c1 .ll { color: #e9caff; }
+  .c1 .sb { border-color: #c084fc; color: #c084fc; background: rgba(192,132,252,0.1); }
+  .c1 .sb:hover { background: #c084fc; color: #0e051c; border-color: #c084fc; }
+  .c1 .div { background: #6b21a5; }
+  .c1 .word-row { background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.3); }
+  .c1 .word-row:hover { background: rgba(192,132,252,0.25); border-color: #c084fc; }
+  .c1 .wt { color: #f3e8ff; }
+
+  .c2 { background: linear-gradient(145deg, #0a2a1a, #021007); border-left: 6px solid #4ade80; }
+  .c2 .lu { color: #86efac; text-shadow: 0 0 6px rgba(74,222,128,0.5); }
+  .c2 .ll { color: #bbf7d0; }
+  .c2 .sb { border-color: #4ade80; color: #4ade80; background: rgba(74,222,128,0.1); }
+  .c2 .sb:hover { background: #4ade80; color: #022113; border-color: #4ade80; }
+  .c2 .div { background: #166534; }
+  .c2 .word-row { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); }
+  .c2 .word-row:hover { background: rgba(74,222,128,0.25); border-color: #4ade80; }
+  .c2 .wt { color: #dcfce7; }
+
+  .c3 { background: linear-gradient(145deg, #2c1704, #1a0a02); border-left: 6px solid #fb923c; }
+  .c3 .lu { color: #fdba74; text-shadow: 0 0 6px rgba(249,115,22,0.5); }
+  .c3 .ll { color: #ffddb0; }
+  .c3 .sb { border-color: #fb923c; color: #fb923c; background: rgba(251,146,60,0.1); }
+  .c3 .sb:hover { background: #fb923c; color: #2b1400; border-color: #fb923c; }
+  .c3 .div { background: #9a3412; }
+  .c3 .word-row { background: rgba(251,146,60,0.12); border-color: rgba(251,146,60,0.3); }
+  .c3 .word-row:hover { background: rgba(251,146,60,0.25); border-color: #fb923c; }
+  .c3 .wt { color: #ffedd5; }
+
+  .c4 { background: linear-gradient(145deg, #2e0b0f, #1a0507); border-left: 6px solid #f87171; }
+  .c4 .lu { color: #ffaaaa; text-shadow: 0 0 6px rgba(239,68,68,0.5); }
+  .c4 .ll { color: #fecaca; }
+  .c4 .sb { border-color: #f87171; color: #f87171; background: rgba(248,113,113,0.1); }
+  .c4 .sb:hover { background: #f87171; color: #2e0306; border-color: #f87171; }
+  .c4 .div { background: #991b1b; }
+  .c4 .word-row { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.3); }
+  .c4 .word-row:hover { background: rgba(248,113,113,0.25); border-color: #f87171; }
+  .c4 .wt { color: #fee2e2; }
+
+  .c5 { background: linear-gradient(145deg, #042f36, #02161a); border-left: 6px solid #22d3ee; }
+  .c5 .lu { color: #9ef0ff; text-shadow: 0 0 6px rgba(6,182,212,0.6); }
+  .c5 .ll { color: #cffafe; }
+  .c5 .sb { border-color: #22d3ee; color: #22d3ee; background: rgba(34,211,238,0.1); }
+  .c5 .sb:hover { background: #22d3ee; color: #011216; border-color: #22d3ee; }
+  .c5 .div { background: #0f5f6e; }
+  .c5 .word-row { background: rgba(34,211,238,0.12); border-color: rgba(34,211,238,0.3); }
+  .c5 .word-row:hover { background: rgba(34,211,238,0.25); border-color: #22d3ee; }
+  .c5 .wt { color: #ecfeff; }
+
+  .c6 { background: linear-gradient(145deg, #2a1f08, #1c1302); border-left: 6px solid #facc15; }
+  .c6 .lu { color: #fde047; text-shadow: 0 0 6px rgba(234,179,8,0.6); }
+  .c6 .ll { color: #fef9c3; }
+  .c6 .sb { border-color: #facc15; color: #facc15; background: rgba(250,204,21,0.1); }
+  .c6 .sb:hover { background: #facc15; color: #1f1802; border-color: #facc15; }
+  .c6 .div { background: #a16207; }
+  .c6 .word-row { background: rgba(250,204,21,0.12); border-color: rgba(250,204,21,0.3); }
+  .c6 .word-row:hover { background: rgba(250,204,21,0.25); border-color: #facc15; }
+  .c6 .wt { color: #fefce8; }
+
+  .c7 { background: linear-gradient(145deg, #0a2f2b, #031714); border-left: 6px solid #2dd4bf; }
+  .c7 .lu { color: #6ee7d0; text-shadow: 0 0 6px rgba(20,184,166,0.5); }
+  .c7 .ll { color: #b6f3e2; }
+  .c7 .sb { border-color: #2dd4bf; color: #2dd4bf; background: rgba(45,212,191,0.1); }
+  .c7 .sb:hover { background: #2dd4bf; color: #021916; border-color: #2dd4bf; }
+  .c7 .div { background: #0f766e; }
+  .c7 .word-row { background: rgba(45,212,191,0.12); border-color: rgba(45,212,191,0.3); }
+  .c7 .word-row:hover { background: rgba(45,212,191,0.25); border-color: #2dd4bf; }
+  .c7 .wt { color: #ccfbf1; }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .letter-block {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .lu {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.7rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    transition: transform 0.2s;
+  }
+  .card:hover .lu {
+    transform: scale(1.02);
+  }
+
+  .ll {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+
+  .sb {
+    background: rgba(20, 20, 40, 0.5);
+    border: 1.8px solid;
+    width: 42px;
+    height: 42px;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .sb.playing {
+    animation: pulseGlow 0.8s ease infinite;
+    box-shadow: 0 0 0 3px rgba(255,215,0,0.6);
+  }
+
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.6); }
+    100% { box-shadow: 0 0 0 8px rgba(255, 215, 0, 0); }
+  }
+
+  .div {
+    height: 2px;
+    margin: 14px 0 18px;
+    border-radius: 4px;
+    opacity: 0.6;
+  }
+
+  .words-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .word-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 60px;
+    padding: 8px 14px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    border: 1px solid;
+    transition: all 0.2s ease;
+  }
+
+  .word-row .ws {
+    font-size: 0.9rem;
+    filter: drop-shadow(0 0 2px rgba(255,215,0,0.5));
+  }
+
+  .wt {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  .word-row.playing {
+    background: rgba(255, 235, 150, 0.3);
+    border-color: #ffd966;
+    box-shadow: 0 0 6px rgba(255,210,50,0.4);
+  }
+  .word-row.playing .wt {
+    color: #fff5cc !important;
+  }
+
+  #voice-banner {
+    display: none;
+    max-width: 560px;
+    margin: 12px auto 28px;
+    padding: 12px 20px;
+    background: rgba(201, 160, 61, 0.15);
+    border-left: 4px solid #c9a03d;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #8b6b3a;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    z-index: 2;
+    position: relative;
+  }
+
+  @media (max-width: 620px) {
+    .cards-section { padding: 0 16px; }
+    .grid { gap: 18px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+    .lu { font-size: 2.8rem; }
+    .ll { font-size: 1.3rem; }
+    .card { padding: 18px 16px 16px; }
+    .sb { width: 36px; height: 36px; font-size: 1rem; }
+    .wt { font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="home-btn-wrap" id="backBtnWrap">
+  <button class="home-btn" onclick="history.back()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b691b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Geri
+  </button>
+</div>
+
+<header>
+  <div class="header-badge">✦ Alfabe ✦</div>
+  <h1>HAMZA HOCA İLE<br>TÜRKÇE ÖĞRENİYORUM</h1>
+  <div class="header-line"></div>
+  <div class="stars">★ ★ ★ ★ ★</div>
+  <p class="subtitle">Türk Alfabesi • 29 Harf</p>
+</header>
+
+<div class="telegram-section">
+  <div class="tg-box">
+    <div class="tg-logo-wrap">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="44" height="44">
+        <circle cx="24" cy="24" r="24" fill="#229ED9"/>
+        <path d="M9.5 23.2l28.6-11c1.3-.5 2.5.3 2 2.2l-4.9 23c-.4 1.6-1.4 2-2.8 1.2l-7.7-5.7-3.7 3.6c-.4.4-0.8.6-1.6.6l.6-8 15-13.5c.6-.6-.1-.9-.9-.3L13.5 27.5 6 25.2c-1.5-.5-1.6-1.5.5-2z" fill="white"/>
+      </svg>
+    </div>
+    <a href="https://t.me/TurkcheOzbekche" target="_blank" class="tg-btn">
+      Kanala Katıl
+    </a>
+  </div>
+</div>
+
+<div class="section-title">🔊 Tıkla • Dinle • Öğren</div>
+
+<!-- Alfabe kartları konteyneri -->
+<div id="voice-banner"></div>
+<div class="cards-section">
+  <div class="grid" id="alphabet-grid"></div>
+</div>
+
+<footer>
+  <p></p>
+  <p><span>✨ Hamza Hoca ile Türkçe Öğreniyorum ✨</span></p>
+</footer>
+
+<script>
+  // Alfabe verisi (29 harf + örnek kelimeler)
+  const alphabet = [
+    { l:'A', w:['araba','anne','ayak'] },
+    { l:'B', w:['baba','balık','burun'] },
+    { l:'C', w:['cam','ceket','cadde'] },
+    { l:'Ç', w:['çanta','çilek','çorba'] },
+    { l:'D', w:['deniz','dil','dağ'] },
+    { l:'E', w:['ev','ekmek','el'] },
+    { l:'F', w:['fare','fırtına','fincan'] },
+    { l:'G', w:['göz','gün','gül'] },
+    { l:'Ğ', w:['dağ','yağmur','eğitim'] },
+    { l:'H', w:['hava','hayvan','hastane'] },
+    { l:'I', w:['ışık','ırmak','ılık'] },
+    { l:'İ', w:['insan','iş','inek'] },
+    { l:'J', w:['jimnastik','jeton','jandarma'] },
+    { l:'K', w:['kedi','kitap','kapı'] },
+    { l:'L', w:['lamba','limon','lale'] },
+    { l:'M', w:['masa','mavi','meyve'] },
+    { l:'N', w:['nehir','nesne','nane'] },
+    { l:'O', w:['okul','orman','oyun'] },
+    { l:'Ö', w:['ördek','öğretmen','öpücük'] },
+    { l:'P', w:['para','pencere','pazar'] },
+    { l:'R', w:['rüzgar','renk','resim'] },
+    { l:'S', w:['su','sabah','saat'] },
+    { l:'Ş', w:['şeker','şehir','şapka'] },
+    { l:'T', w:['top','taş','tren'] },
+    { l:'U', w:['uçak','uyku','uzay'] },
+    { l:'Ü', w:['üzüm','ülke','ütü'] },
+    { l:'V', w:['vakit','vücut','volkan'] },
+    { l:'Y', w:['yıldız','yemek','yol'] },
+    { l:'Z', w:['zaman','zebra','zeytin'] }
+  ];
+
+  const lcMap = {
+    A:'a',B:'b',C:'c',Ç:'ç',D:'d',E:'e',F:'f',G:'g',Ğ:'ğ',
+    H:'h',I:'ı',İ:'i',J:'j',K:'k',L:'l',M:'m',N:'n',O:'o',
+    Ö:'ö',P:'p',R:'r',S:'s',Ş:'ş',T:'t',U:'u',Ü:'ü',V:'v',Y:'y',Z:'z'
+  };
+
+  let trVoice = null;
+
+  // Ses motoru başlatma
+  function initVoices() {
+    const voices = speechSynthesis.getVoices();
+    if (!voices.length) return;
+    trVoice = voices.find(v => v.lang === 'tr-TR') || voices.find(v => v.lang.startsWith('tr')) || null;
+    const banner = document.getElementById('voice-banner');
+    if (!trVoice && banner) {
+      banner.style.display = 'block';
+      banner.textContent = '🔊 Uyarı: Türkçe ses sentezlenemeyebilir. Lütfen Chrome, Edge veya modern bir tarayıcı kullanın.';
+    } else if (banner) {
+      banner.style.display = 'none';
+    }
+  }
+
+  if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = initVoices;
+    initVoices();
+    setTimeout(() => {
+      if (!trVoice) initVoices();
+    }, 400);
+  } else {
+    const banner = document.getElementById('voice-banner');
+    if(banner) {
+      banner.style.display = 'block';
+      banner.textContent = '⚠️ Tarayıcınız ses sentezini desteklemiyor.';
+    }
+  }
+
+  function cancelSpeechAndClear() {
+    if (window.speechSynthesis) {
+      speechSynthesis.cancel();
+    }
+    document.querySelectorAll('.playing').forEach(el => el.classList.remove('playing'));
+  }
+
+  function speakText(text, targetElement) {
+    if (!window.speechSynthesis) return;
+    cancelSpeechAndClear();
+
+    setTimeout(() => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'tr-TR';
+      utterance.rate = 0.82;
+      utterance.pitch = 1.02;
+      if (trVoice) utterance.voice = trVoice;
+
+      if (targetElement) {
+        targetElement.classList.add('playing');
+        utterance.onend = () => targetElement.classList.remove('playing');
+        utterance.onerror = () => targetElement.classList.remove('playing');
+      }
+
+      speechSynthesis.speak(utterance);
+    }, 50);
+  }
+
+  const gridContainer = document.getElementById('alphabet-grid');
+  if (gridContainer) {
+    alphabet.forEach((item, idx) => {
+      const { l, w } = item;
+      const colorIndex = idx % 8;
+      const className = `card ${'c' + colorIndex}`;
+      const lowerLetter = lcMap[l] || l.toLowerCase();
+
+      const wordsHtml = w.map(word => `
+        <div class="word-row" data-word="${word}">
+          <span class="ws">🔊</span>
+          <span class="wt">${word}</span>
+        </div>
+      `).join('');
+
+      const cardDiv = document.createElement('div');
+      cardDiv.className = className;
+      cardDiv.innerHTML = `
+        <div class="card-top">
+          <div class="letter-block">
+            <span class="lu">${l}</span>
+            <span class="ll">${lowerLetter}</span>
+          </div>
+          <button class="sb" data-letter="${l}" title="Sesi dinle">🔊</button>
+        </div>
+        <div class="div"></div>
+        <div class="words-list">
+          ${wordsHtml}
+        </div>
+      `;
+      gridContainer.appendChild(cardDiv);
+    });
+  }
+
+  // Olay dinleyicilerini bağlama
+  function attachEvents() {
+    document.querySelectorAll('.sb').forEach(btn => {
+      btn.removeEventListener('click', letterClickHandler);
+      btn.addEventListener('click', letterClickHandler);
+    });
+    document.querySelectorAll('.word-row').forEach(row => {
+      row.removeEventListener('click', wordClickHandler);
+      row.addEventListener('click', wordClickHandler);
+    });
+  }
+
+  function letterClickHandler(e) {
+    e.stopPropagation();
+    const letter = this.getAttribute('data-letter');
+    if (letter) speakText(letter, this);
+  }
+
+  function wordClickHandler(e) {
+    const wordRow = this.closest('.word-row');
+    if (wordRow) {
+      const wordTextElem = wordRow.querySelector('.wt');
+      if (wordTextElem) {
+        const word = wordTextElem.innerText;
+        speakText(word, wordRow);
+      }
+    }
+  }
+
+  attachEvents();
+  // Dinamik olarak kartlar yüklendiğinde tekrar bağlamak için
+  window.addEventListener('load', () => {
+    attachEvents();
+    if (!trVoice && speechSynthesis) {
+      setTimeout(() => {
+        const voices = speechSynthesis.getVoices();
+        trVoice = voices.find(v => v.lang === 'tr-TR') || voices.find(v => v.lang.startsWith('tr'));
+        const banner = document.getElementById('voice-banner');
+        if (!trVoice && banner) {
+          banner.style.display = 'block';
+          banner.textContent = '🔊 Türkçe ses için lütfen Chrome/Edge/Safari güncel sürüm kullanın.';
+        } else if (trVoice && banner) {
+          banner.style.display = 'none';
+        }
+      }, 300);
+    }
+  });
+</script>
+</body>
+</html>
