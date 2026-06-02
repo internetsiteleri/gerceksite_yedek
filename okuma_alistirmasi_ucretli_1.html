@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Okuma – Buğday</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --surface: #fff;
+    --ink: #1a1612;
+    --muted: #7a6e62;
+    --border: #e4ddd3;
+    --accent: #8b4513;
+    --accent-light: #f5ede4;
+    --gold: #c8963e;
+    --correct: #2d7a50;
+    --correct-bg: #edf7f1;
+    --wrong: #b93a3a;
+    --wrong-bg: #fdf0f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 17px; line-height: 1.75; }
+  .page { max-width: 860px; margin: 0 auto; padding: 52px 28px 80px; position: relative; }
+  
+  /* geri butonu - sol üst köşe, sabit değil, sayfa ile kayar */
+  .back-button {
+    position: absolute;
+    top: 28px;
+    left: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 8px 18px 8px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 100;
+    backdrop-filter: blur(0px);
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+  .back-button:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transform: translateX(-2px);
+  }
+  .back-button svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--accent);
+    stroke-width: 2;
+    fill: none;
+    transition: transform 0.2s;
+  }
+  .back-button:hover svg {
+    transform: translateX(-2px);
+  }
+  .back-button span {
+    line-height: 1;
+  }
+
+  .header { text-align: center; margin-bottom: 44px; }
+  .eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 12px; }
+  h1 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(22px, 4vw, 40px); font-weight: 700; line-height: 1.15; color: var(--ink); margin-bottom: 8px; }
+  .subheading { font-size: 14px; color: var(--muted); font-style: italic; }
+  .rule { width: 48px; height: 3px; background: var(--accent); margin: 18px auto 0; border-radius: 2px; }
+  .instructions { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 13px 20px; margin-bottom: 28px; font-size: 14.5px; color: var(--ink); line-height: 1.6; }
+  .word-bank-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 28px; margin-bottom: 32px; }
+  .word-bank-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 14px; }
+  .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .word-item { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--bg); border-radius: 7px; font-size: 14px; }
+  .word-letter { font-weight: 700; color: var(--accent); min-width: 20px; }
+  .reading-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 40px; margin-bottom: 36px; }
+  .reading-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--accent); text-align: center; margin-bottom: 6px; }
+  .reading-subtitle { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 28px; font-style: italic; }
+  .reading-text p { margin-bottom: 18px; color: #2e2820; font-size: 16px; line-height: 2.2; }
+  .reading-text p:last-child { margin-bottom: 0; }
+
+  .isel { display: inline-block; position: relative; vertical-align: middle; margin: 0 2px; }
+  .isel-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px 2px 12px;
+    background: var(--accent-light); border: 1.5px solid var(--accent);
+    border-radius: 20px; cursor: pointer;
+    font-size: 14px; font-family: 'DM Sans', sans-serif;
+    color: var(--accent); font-weight: 500; white-space: nowrap;
+    transition: background 0.15s; user-select: none; line-height: 1.6;
+  }
+  .isel-btn:hover { background: #eeddd0; }
+  .isel-btn.active { background: #eeddd0; }
+  .isel-btn .qbadge { font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 1px 6px; border-radius: 10px; margin-right: 2px; }
+  .isel-btn .sval { color: var(--muted); font-weight: 400; font-style: italic; }
+  .isel-btn .sval.chosen { color: var(--accent); font-weight: 500; font-style: normal; }
+  .isel-btn .arr { font-size: 9px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .isel-btn.active .arr { transform: rotate(180deg); }
+  .isel-btn.ok { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); }
+  .isel-btn.bad { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+
+  #floating-dd {
+    display: none;
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(80,50,20,0.16);
+    z-index: 9999;
+    overflow: hidden;
+    min-width: 210px;
+  }
+  #floating-dd.open { display: block; }
+  .dd-opt { display: flex; align-items: center; gap: 10px; padding: 10px 16px; font-size: 14px; cursor: pointer; transition: background 0.12s; font-family: 'DM Sans', sans-serif; color: var(--ink); }
+  .dd-opt:hover { background: var(--accent-light); }
+  .dd-opt.sel { background: var(--accent-light); font-weight: 500; }
+  .opt-l { font-weight: 700; color: var(--accent); min-width: 22px; }
+
+  .exp-block { display: none; margin-top: 24px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .exp-block.vis { display: block; }
+  .exp-row { display: flex; border-bottom: 1px solid var(--border); }
+  .exp-row:last-child { border-bottom: none; }
+  .exp-lbl { flex-shrink: 0; width: 48px; display: flex; align-items: flex-start; justify-content: center; padding: 14px 0; font-size: 12px; font-weight: 700; }
+  .exp-row.cr .exp-lbl { background: var(--correct-bg); color: var(--correct); }
+  .exp-row.wr .exp-lbl { background: var(--wrong-bg); color: var(--wrong); }
+  .exp-row.nm .exp-lbl { background: var(--accent-light); color: var(--accent); }
+  .exp-body { flex: 1; padding: 14px 18px; font-size: 14px; line-height: 1.65; color: var(--ink); background: var(--surface); }
+  .exp-body .ca { color: var(--correct); font-weight: 700; }
+  .exp-body .wa { color: var(--wrong); font-weight: 700; }
+  .exp-body .et { color: var(--muted); margin-top: 5px; font-size: 13px; }
+
+  .controls { display: flex; gap: 12px; margin-top: 28px; }
+  .btn-check { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 12px 28px; font-size: 14px; font-weight: 700; letter-spacing: 1px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; }
+  .btn-check:hover { opacity: 0.87; }
+  .btn-reset { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 12px 20px; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+  .score-banner { display: none; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-top: 24px; }
+  .score-big { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 700; color: var(--accent); line-height: 1; }
+  .score-sub { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .footer { text-align: center; margin-top: 52px; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+  
+  @media (max-width: 640px) {
+    .back-button { padding: 6px 14px 6px 12px; top: 18px; left: 18px; font-size: 12px; }
+    .back-button svg { width: 14px; height: 14px; }
+    .page { padding: 42px 20px 70px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- GERİ BUTONU - sayfa ile kayar, sol üst köşe, dokununca bir önceki sayfaya gider -->
+  <button class="back-button" id="backNavBtn" aria-label="Geri">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+    <span>Geri</span>
+  </button>
+
+  <div class="header">
+    <div class="eyebrow">Okuma Alıştırması · 6</div>
+    <h1>Buğday</h1>
+    <div class="subheading">Boşluk Doldurma · Sözcük Seçimi</div>
+    <div class="rule"></div>
+  </div>
+
+  <div class="instructions">
+    Aşağıdaki sözcükleri (A–H) kullanarak metindeki boşlukları doldurunuz. Her sözcük yalnızca bir defa kullanılabilir. <strong>Seçmemeniz gereken İKİ seçenek bulunmaktadır.</strong>
+  </div>
+
+  <div class="word-bank-card">
+    <div class="word-bank-title">Sözcük Bankası</div>
+    <div class="word-grid">
+      <div class="word-item"><span class="word-letter">A)</span> tavsiye edilir</div>
+      <div class="word-item"><span class="word-letter">B)</span> önem</div>
+      <div class="word-item"><span class="word-letter">C)</span> devam eder</div>
+      <div class="word-item"><span class="word-letter">D)</span> azalmasına</div>
+      <div class="word-item"><span class="word-letter">E)</span> artış</div>
+      <div class="word-item"><span class="word-letter">F)</span> zarar</div>
+      <div class="word-item"><span class="word-letter">G)</span> yere</div>
+      <div class="word-item"><span class="word-letter">H)</span> kararsız</div>
+    </div>
+  </div>
+
+  <div class="reading-section">
+    <div class="reading-title">Buğday</div>
+    <div class="reading-subtitle">Açılır menülerden doğru sözcüğü seçin</div>
+    <div class="reading-text">
+
+      <p>Buğday, insanlık tarihinin en eski tarım ürünlerinden biridir ve birçok ülkede temel besin kaynağı olarak tüketilmektedir. Özellikle ekmek, makarna ve bulgur gibi yiyeceklerin üretiminde kullanılan buğday, insanların günlük yaşamında önemli bir
+        <span class="isel"><span class="isel-btn" id="btn-1" data-q="1"><span class="qbadge">S1</span><span class="sval" id="val-1">seçin…</span><span class="arr">▼</span></span></span>
+      sahiptir.</p>
+
+      <p>Buğdayın yetişebilmesi için uygun iklim koşullarına ihtiyaç vardır. Genellikle ilkbaharda büyümeye başlayan bu bitki, yeterli yağış ve güneş ışığı sayesinde sağlıklı bir şekilde gelişir. Ancak aşırı sıcaklıklar ve kuraklık, ürün miktarının
+        <span class="isel"><span class="isel-btn" id="btn-2" data-q="2"><span class="qbadge">S2</span><span class="sval" id="val-2">seçin…</span><span class="arr">▼</span></span></span>
+      neden olabilir.</p>
+
+      <p>Çiftçiler, kaliteli ürün elde edebilmek için tarlaları düzenli olarak kontrol eder ve toprağın verimli olmasına dikkat ederler. Ayrıca zararlı böceklerden korunmak amacıyla çeşitli yöntemler kullanılmaktadır. Bu çalışmalar sayesinde buğday üretiminde büyük
+        <span class="isel"><span class="isel-btn" id="btn-3" data-q="3"><span class="qbadge">S3</span><span class="sval" id="val-3">seçin…</span><span class="arr">▼</span></span></span>
+      sağlanmaktadır.</p>
+
+      <p>Buğday yalnızca ekonomik açıdan değil, sağlık açısından da oldukça değerlidir. İçerisinde bulunan vitamin ve mineraller, insanların dengeli beslenmesine katkıda bulunur. Özellikle tam buğday ürünleri, uzun süre tok tuttuğu için uzmanlar tarafından sıkça
+        <span class="isel"><span class="isel-btn" id="btn-4" data-q="4"><span class="qbadge">S4</span><span class="sval" id="val-4">seçin…</span><span class="arr">▼</span></span></span>.</p>
+
+      <p>Hasat zamanı geldiğinde çiftçiler büyük bir emekle yetiştirdikleri ürünleri toplarlar. Daha sonra buğday fabrikalara gönderilir ve farklı gıda ürünlerine dönüştürülür. Böylece tarladan başlayan süreç, insanların sofralarına kadar
+        <span class="isel"><span class="isel-btn" id="btn-5" data-q="5"><span class="qbadge">S5</span><span class="sval" id="val-5">seçin…</span><span class="arr">▼</span></span></span>.</p>
+
+      <p>Günümüzde artan nüfus nedeniyle buğday üretimi daha da önemli hâle gelmiştir. Bu nedenle tarım alanlarının korunması ve üretimin dikkatli bir şekilde planlanması büyük
+        <span class="isel"><span class="isel-btn" id="btn-6" data-q="6"><span class="qbadge">S6</span><span class="sval" id="val-6">seçin…</span><span class="arr">▼</span></span></span>
+      taşımaktadır.</p>
+
+    </div>
+
+    <div class="exp-block" id="exp-block">
+      <div class="exp-row" id="er-1"><div class="exp-lbl" id="el-1">S1</div><div class="exp-body" id="eb-1"></div></div>
+      <div class="exp-row" id="er-2"><div class="exp-lbl" id="el-2">S2</div><div class="exp-body" id="eb-2"></div></div>
+      <div class="exp-row" id="er-3"><div class="exp-lbl" id="el-3">S3</div><div class="exp-body" id="eb-3"></div></div>
+      <div class="exp-row" id="er-4"><div class="exp-lbl" id="el-4">S4</div><div class="exp-body" id="eb-4"></div></div>
+      <div class="exp-row" id="er-5"><div class="exp-lbl" id="el-5">S5</div><div class="exp-body" id="eb-5"></div></div>
+      <div class="exp-row" id="er-6"><div class="exp-lbl" id="el-6">S6</div><div class="exp-body" id="eb-6"></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-check" onclick="checkAll()">KONTROL ET</button>
+    <button class="btn-reset" onclick="resetAll()">SIFIRLA</button>
+  </div>
+
+  <div class="score-banner" id="score-banner">
+    <div class="score-big" id="score-num">0/6</div>
+    <div class="score-sub">doğru cevap</div>
+  </div>
+
+  <div class="footer">Hamza Hoca ile Türkçe Öğreniyorum</div>
+</div>
+
+<div id="floating-dd">
+  <div class="dd-opt" data-l="A"><span class="opt-l">A)</span>tavsiye edilir</div>
+  <div class="dd-opt" data-l="B"><span class="opt-l">B)</span>önem</div>
+  <div class="dd-opt" data-l="C"><span class="opt-l">C)</span>devam eder</div>
+  <div class="dd-opt" data-l="D"><span class="opt-l">D)</span>azalmasına</div>
+  <div class="dd-opt" data-l="E"><span class="opt-l">E)</span>artış</div>
+  <div class="dd-opt" data-l="F"><span class="opt-l">F)</span>zarar</div>
+  <div class="dd-opt" data-l="G"><span class="opt-l">G)</span>yere</div>
+  <div class="dd-opt" data-l="H"><span class="opt-l">H)</span>kararsız</div>
+</div>
+
+<script>
+  const ANSWERS = {1:'G',2:'D',3:'E',4:'A',5:'C',6:'B'};
+  const LABELS  = {A:'tavsiye edilir',B:'önem',C:'devam eder',D:'azalmasına',E:'artış',F:'zarar',G:'yere',H:'kararsız'};
+  const EXPS = {
+    1:'<em>Yere</em> sözcüğü "önemli bir yere sahiptir" kalıbını tamamlar. Türkçede bu ifade "önemli bir konuma/role sahiptir" anlamında yaygın kullanılır. Diğer seçenekler bu kalıba dilbilgisi veya anlam açısından uymaz.',
+    2:'"Ürün miktarının <em>azalmasına</em> neden olabilir" cümlesinde neden-sonuç ilişkisi vardır. Kuraklık ve aşırı sıcaklık üretimi olumsuz etkiler; bu yüzden "-masına neden olmak" yapısıyla azalmasına doğrudur.',
+    3:'"Büyük <em>artış</em> sağlanmaktadır" ifadesi çiftçilerin özenli çalışmalarının üretimi olumlu yönde geliştirdiğini anlatır. Anlam ve dilbilgisi açısından tam uygundur.',
+    4:'Uzmanların tam buğday ürünlerini önermesi anlatıldığından "uzmanlar tarafından sıkça <em>tavsiye edilir</em>" edilgen yapısı doğrudur.',
+    5:'Tarladan başlayan sürecin sofralara kadar sürdüğü anlatılır. "Süreç… <em>devam eder</em>" ifadesi bu sürekliliği doğru biçimde aktarır.',
+    6:'"Büyük <em>önem</em> taşımaktadır" Türkçede yaygın bir kalıptır. Buğday üretiminin planlanmasının kritik olduğu bu ifadeyle vurgulanır.'
+  };
+
+  const selected = {};
+  const locked   = {};
+  let openQ = null;
+  const fdd = document.getElementById('floating-dd');
+
+  document.querySelectorAll('.isel-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const q = parseInt(this.dataset.q);
+      if (locked[q]) return;
+      if (openQ === q) { closeDD(); return; }
+      openDD(q, this);
+    });
+  });
+
+  fdd.querySelectorAll('.dd-opt').forEach(opt => {
+    opt.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (openQ === null) return;
+      const letter = this.dataset.l;
+      const label  = LABELS[letter];
+      pickOption(openQ, letter, label);
+      closeDD();
+    });
+  });
+
+  document.addEventListener('click', closeDD);
+
+  function openDD(q, btnEl) {
+    openQ = q;
+    fdd.querySelectorAll('.dd-opt').forEach(o => {
+      o.classList.toggle('sel', selected[q] === o.dataset.l);
+    });
+    fdd.classList.add('open');
+
+    const rect = btnEl.getBoundingClientRect();
+    const ddW  = 220;
+    let left   = rect.left;
+    let top    = rect.bottom + 6;
+
+    if (left + ddW > window.innerWidth - 8) left = window.innerWidth - ddW - 8;
+    if (left < 8) left = 8;
+
+    const ddH = 8 * 40;
+    if (top + ddH > window.innerHeight - 8) top = rect.top - ddH - 6;
+
+    fdd.style.left  = left + 'px';
+    fdd.style.top   = top  + 'px';
+    fdd.style.width = ddW  + 'px';
+
+    document.getElementById('btn-' + q).classList.add('active');
+  }
+
+  function closeDD() {
+    if (openQ !== null) document.getElementById('btn-' + openQ).classList.remove('active');
+    fdd.classList.remove('open');
+    openQ = null;
+  }
+
+  function pickOption(q, letter, label) {
+    selected[q] = letter;
+    const val = document.getElementById('val-' + q);
+    val.textContent = letter + ') ' + label;
+    val.classList.add('chosen');
+  }
+
+  function checkAll() {
+    let score = 0;
+    for (let q = 1; q <= 6; q++) {
+      locked[q] = true;
+      const ans    = selected[q];
+      const correct= ANSWERS[q];
+      const isRight= ans === correct;
+      if (isRight) score++;
+
+      const btn = document.getElementById('btn-' + q);
+      btn.classList.remove('active');
+      btn.classList.add(isRight ? 'ok' : 'bad');
+      btn.style.pointerEvents = 'none';
+
+      const row = document.getElementById('er-' + q);
+      const lbl = document.getElementById('el-' + q);
+      const body= document.getElementById('eb-' + q);
+      row.classList.add(isRight ? 'cr' : (ans ? 'wr' : 'nm'));
+      lbl.textContent = isRight ? '✓' : (ans ? '✗' : '–');
+
+      if (isRight) {
+        body.innerHTML = '<span class="ca">Doğru: ' + correct + ') ' + LABELS[correct] + '</span><div class="et">' + EXPS[q] + '</div>';
+      } else if (ans) {
+        body.innerHTML = '<span class="wa">Yanlış: ' + ans + ') ' + LABELS[ans] + '</span> → <span class="ca">Doğru: ' + correct + ') ' + LABELS[correct] + '</span><div class="et">' + EXPS[q] + '</div>';
+      } else {
+        body.innerHTML = '<span style="color:var(--muted)">Boş bırakıldı.</span> <span class="ca">Doğru: ' + correct + ') ' + LABELS[correct] + '</span><div class="et">' + EXPS[q] + '</div>';
+      }
+    }
+    closeDD();
+    document.getElementById('exp-block').classList.add('vis');
+    const banner = document.getElementById('score-banner');
+    banner.style.display = 'block';
+    document.getElementById('score-num').textContent = score + '/6';
+    banner.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function resetAll() {
+    for (let q = 1; q <= 6; q++) {
+      delete selected[q];
+      delete locked[q];
+      const btn = document.getElementById('btn-' + q);
+      btn.className = 'isel-btn';
+      btn.style.pointerEvents = '';
+      const val = document.getElementById('val-' + q);
+      val.textContent = 'seçin…';
+      val.classList.remove('chosen');
+      const row = document.getElementById('er-' + q);
+      row.classList.remove('cr','wr','nm');
+      document.getElementById('el-' + q).textContent = 'S' + q;
+      document.getElementById('eb-' + q).innerHTML = '';
+    }
+    closeDD();
+    document.getElementById('exp-block').classList.remove('vis');
+    document.getElementById('score-banner').style.display = 'none';
+  }
+
+  // Geri butonu fonksiyonu: bir önceki sayfaya yönlendirir (geçmiş varsa geri gider, yoksa boş işlem)
+  const backBtn = document.getElementById('backNavBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Tarayıcı geçmişi yoksa sayfayı yeniden yüklemek veya boş javascript:void(0) gibi davranmamak için
+        // basitçe geri gitmeye çalış, bazı ortamlarda faydasız olabilir ancak sorun çıkarmaz.
+        window.location.href = 'about:blank';
+      }
+    });
+  }
+</script>
+</body>
+</html>
